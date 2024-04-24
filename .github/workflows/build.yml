@@ -1,0 +1,61 @@
+---
+    name: Build
+    
+    on:
+      pull_request:
+      push:
+        branches:
+          - main
+      schedule:
+        - cron: "10 2 * * 0"
+
+    jobs:
+      test:
+        name: Test docker build
+        runs-on: ubuntu-latest
+
+        steps:
+          - uses: actions/checkout@v4
+    
+          - name: Test building image
+            run: docker build -t docker-ansible-cicd .
+
+          - name: Run the built image.
+            run: >-
+              docker run --name test-container -d --privileged
+              -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host
+              docker-ansible-cicd
+
+          - name: Check Ansible is running
+            run: docker exec --tty test-container env TERM=xterm ansible --version
+
+      release:
+        name: Release to Docker Hub
+        runs-on: ubuntu-latest
+        needs: test
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+          - uses: actions/checkout@v4
+          - uses: docker/setup-qemu-action@v3
+          - uses: docker/setup-buildx-action@v3
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+          - name: Run find-and-replace to remove refs/heads/
+            uses: mad9000/actions-find-and-replace-string@5
+            id: findandreplace
+            with:
+              source: ${{ github.repository  }}
+              find: 'docker_container_' 
+              replace: ''
+          - name: Build and push image.
+            uses: docker/build-push-action@v5
+            with:
+              context: ./
+              file: Dockerfile
+              platforms: linux/amd64,linux/arm64
+              push: true
+              tags: ${{ steps.findandreplace.outputs.value }}:latest
