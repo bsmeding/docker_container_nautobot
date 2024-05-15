@@ -1,5 +1,5 @@
-ARG PYTHON_VER=3.9
-ARG NAUTOBOT_IMAGE=nautobot:2.2-py3.9
+ARG PYTHON_VER=3.11
+ARG NAUTOBOT_IMAGE=nautobot:2.2
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -39,10 +39,10 @@ RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
 RUN pip3 install --upgrade nornir-nautobot
-RUN pip3 install --no-warn-script-location nautobot-ssot==2.5.0
+RUN pip3 install --no-warn-script-location nautobot-ssot==2.6.1
 RUN pip3 install --no-warn-script-location nautobot-plugin-nornir==2.0.1
-RUN pip3 install --no-warn-script-location nautobot-golden-config==2.0.3
-RUN pip3 install --no-warn-script-location nautobot-device-lifecycle-mgmt==2.0.1
+RUN pip3 install --no-warn-script-location nautobot-golden-config==2.0.4
+RUN pip3 install --no-warn-script-location nautobot-device-lifecycle-mgmt==2.1.1
 
 
 # ---------------------------------
