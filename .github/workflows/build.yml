@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-      include:
-        - image: 'bsmeding/nautobot_v1'
-          dockerfile: v1/Dockerfile
-        - image: 'bsmeding/nautobot_v2'
-          dockerfile: v2/Dockerfile
+        include:
+          - image: 'bsmeding/nautobot_v1'
+            dockerfile: v1/Dockerfile
+          - image: 'bsmeding/nautobot_v2'
+            dockerfile: v2/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v3
