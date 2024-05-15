@@ -1,5 +1,5 @@
 ARG PYTHON_VER=3.9
-ARG NAUTOBOT_IMAGE=nautobot:latest
+ARG NAUTOBOT_IMAGE=nautobot:1.6-py3.8
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -20,8 +20,12 @@ RUN apt-get install -y gcc && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip wheel && pip3 install django-auth-ldap
-RUN pip3 install --upgrade ansible==8.2.0
+RUN pip3 install --upgrade pip wheel
+RUN pip3 install --upgrade 
+
+
+#django-auth-ldap
+RUN pip3 install --upgrade ansible
 
 # Check extra pip packages to install
 RUN pip3 install --upgrade nautobot[napalm]
