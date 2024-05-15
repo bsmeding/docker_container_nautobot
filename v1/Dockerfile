@@ -21,7 +21,6 @@ RUN apt-get install -y gcc && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip wheel
-RUN pip3 install --upgrade 
 
 
 #django-auth-ldap
