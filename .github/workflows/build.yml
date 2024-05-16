@@ -12,8 +12,8 @@ jobs:
         include:
           - image: 'bsmeding/nautobot_v1'
             dockerfile: v1/Dockerfile
-          - image: 'bsmeding/nautobot_v2'
-            dockerfile: v2/Dockerfile
+          # - image: 'bsmeding/nautobot_v2'
+          #   dockerfile: v2/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,16 +22,23 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ matrix.image }}
+      # - name: Extract metadata (tags, labels) for Docker
+      #   id: meta
+      #   uses: docker/metadata-action@v4
+      #   with:
+      #     images: ${{ matrix.image }}
+      - name: Set variables
+        run: |
+          NB_VER=$(cat V1/VERSION)
+          echo "NB_VERSION=$NB_VER" >> $GITHUB_ENV
+          PYTHON_VER=$(cat V1/PYTHON_VERSION)
+          echo "PYTHON_VERSION=$PYTHON_VER" >> $GITHUB_ENV
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ matrix.image }}:${{ env.VERSION }}
+            ${{ matrix.image }}:latest
