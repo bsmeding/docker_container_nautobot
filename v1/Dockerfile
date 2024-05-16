@@ -1,9 +1,9 @@
-ARG PYTHON_VER=3.9
+ARG PYTHON_VER=${ PYTHON_V1_VER }
 ARG NAUTOBOT_IMAGE=nautobot:1.6
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${NB_VERSION}-py${PYTHON_VER} as base
+FROM networktocode/nautobot:${NB_V1_VERSION}-py${PYTHON_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
