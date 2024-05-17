@@ -11,7 +11,8 @@ jobs:
       matrix:
         include:
           - image: 'bsmeding/nautobot'
-            dockerfile: v1/Dockerfile
+            folder: v1
+            dockerfile: Dockerfile
             nb_version: 1.6.20
             py_version: 3.9
           # - image: 'bsmeding/nautobot'
@@ -46,7 +47,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}
+          context: "{{defaultContext}}:${{ matrix.folder }}"
           file: ${{ matrix.dockerfile }} --build-arg PYTHON_VER=${{ matrix.py_version }} --build-arg NAUTOBOT_VER=${{ matrix.nb_version }}
           push: true
           tags: |
