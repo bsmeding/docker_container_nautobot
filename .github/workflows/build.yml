@@ -11,8 +11,7 @@ jobs:
       matrix:
         include:
           - image: 'bsmeding/nautobot'
-            folder: v1
-            dockerfile: Dockerfile
+            dockerfile: v1/Dockerfile
             nb_version: '1.6.20'
             py_version: '3.9'
           # - image: 'bsmeding/nautobot'
