@@ -53,8 +53,8 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          build-args: 
-            - PYTHON_VER=${{ matrix.py_version }}
-            - NAUTOBOT_VER=${{ matrix.nb_version }}
+          build-args: |
+            PYTHON_VER=${{ matrix.py_version }}
+            NAUTOBOT_VER=${{ matrix.nb_version }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}
