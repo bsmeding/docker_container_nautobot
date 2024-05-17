@@ -51,4 +51,3 @@ jobs:
           push: true
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}
-            ${{ matrix.image }}:latest

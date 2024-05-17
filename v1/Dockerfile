@@ -1,9 +1,9 @@
 # ARG PYTHON_VER=${ PYTHON_V1_VER }
-# ARG NAUTOBOT_IMAGE=nautobot:${NB_V1_VERSION}
+# ARG NAUTOBOT_IMAGE=nautobot:${NAUTOBOT_VER}
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${NB_V1_VERSION}-py${PYTHON_VER} as base
+FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -27,9 +27,9 @@ RUN pip3 install --upgrade pip wheel
 RUN pip3 install django-auth-ldap 
 
 # Check extra pip packages to install for working in jobs
-RUN pip3 install --upgrade nautobot[napalm]==${NB_V1_VERSION}
-RUN pip3 install --upgrade nautobot[sso]==${NB_V1_VERSION}
-RUN pip3 install --upgrade nautobot[ldap]==${NB_V1_VERSION}
+RUN pip3 install --upgrade nautobot[napalm]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade nautobot[sso]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade nautobot[ldap]==${NAUTOBOT_VER}
 RUN pip3 install --upgrade social-auth-core[openidconnect]
 RUN pip3 install --upgrade pandas
 RUN pip3 install --upgrade xlrd
