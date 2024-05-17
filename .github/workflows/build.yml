@@ -33,6 +33,10 @@ jobs:
           echo "NB_V1_VER=$NB_V1_VER" >> $GITHUB_ENV
           PYTHON_V1_VER=$(cat ${{ github.workspace }}/v1/PYTHON_VERSION)
           echo "PYTHON_V1_VER=$PYTHON_V1_VER" >> $GITHUB_ENV
+          NB_V2_VER=$(cat ${{ github.workspace }}/v2/VERSION)
+          echo "NB_V2_VER=$NB_V2_VER" >> $GITHUB_ENV
+          PYTHON_V2_VER=$(cat ${{ github.workspace }}/v2/PYTHON_VERSION)
+          echo "PYTHON_V2_VER=$PYTHON_V2_VER" >> $GITHUB_ENV          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:

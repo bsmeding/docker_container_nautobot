@@ -3,7 +3,7 @@ ARG NAUTOBOT_IMAGE=nautobot:${NB_V1_VERSION}
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${NB_V1_VERSION}-py${PYTHON_VER} as base
+FROM networktocode/nautobot:${env.NB_V1_VERSION}-py${env.PYTHON_V1_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -65,7 +65,7 @@ FROM base as final
 ARG PYTHON_VER
 USER 0
 
-COPY --from=builder /usr/local/lib/python${PYTHON_VER}/site-packages /usr/local/lib/python${PYTHON_VER}/site-packages
+COPY --from=builder /usr/local/lib/python${env.PYTHON_V1_VER}/site-packages /usr/local/lib/python${env.PYTHON_V1_VER}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 USER nautobot
 
