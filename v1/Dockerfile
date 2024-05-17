@@ -1,5 +1,5 @@
-# ARG PYTHON_VER=${ PYTHON_V1_VER }
-# ARG NAUTOBOT_IMAGE=nautobot:${NAUTOBOT_VER}
+ARG PYTHON_VER
+ARG NAUTOBOT_VER
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
