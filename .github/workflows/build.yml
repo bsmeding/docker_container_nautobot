@@ -29,7 +29,7 @@ jobs:
       #     images: ${{ matrix.image }}
       - name: Set variables
         run: |
-          NB_V1_VER=$(cat ${{GITHUB_WORKSPACE}}/V1/VERSION)
+          NB_V1_VER=$(cat ${{ github.workspace }}/V1/VERSION)
           echo "NB_V1_VER=$NB_V1_VER" >> $GITHUB_ENV
           PYTHON_V1_VER=$(cat V1/PYTHON_VERSION)
           echo "PYTHON_V1_VER=$PYTHON_V1_VER" >> $GITHUB_ENV
