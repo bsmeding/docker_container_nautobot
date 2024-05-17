@@ -27,9 +27,9 @@ RUN pip3 install --upgrade pip wheel
 # RUN pip3 install django-auth-ldap cd
 
 # Check extra pip packages to install for working in jobs
-RUN pip3 install --upgrade nautobot[napalm]
-RUN pip3 install --upgrade nautobot[sso]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade nautobot[ldap]==${NAUTOBOT_VER}
+# RUN pip3 install --upgrade nautobot[napalm]==${NAUTOBOT_VER}
+# RUN pip3 install --upgrade nautobot[sso]==${NAUTOBOT_VER}
+# RUN pip3 install --upgrade nautobot[ldap]==${NAUTOBOT_VER}
 RUN pip3 install --upgrade social-auth-core[openidconnect]
 RUN pip3 install --upgrade pandas
 RUN pip3 install --upgrade xlrd
