@@ -25,11 +25,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # - name: Extract metadata (tags, labels) for Docker
-      #   id: meta
-      #   uses: docker/metadata-action@v4
-      #   with:
-      #     images: ${{ matrix.image }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ matrix.image }}:${{ matrix.nb_version }}   
       # - name: Set variables
       #   # run: |
       #   #   NB_V1_VER=$(cat ${{ github.workspace }}/v1/VERSION)
@@ -47,7 +47,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: "{{defaultContext}}:${{ matrix.folder }}"
+          context: .
           file: ${{ matrix.dockerfile }} --build-arg PYTHON_VER=${{ matrix.py_version }} --build-arg NAUTOBOT_VER=${{ matrix.nb_version }}
           push: true
           tags: |
