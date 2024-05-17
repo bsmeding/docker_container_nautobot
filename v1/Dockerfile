@@ -1,9 +1,9 @@
-# ARG PYTHON_VER=${ PY_VERSION }
-# ARG NAUTOBOT_IMAGE=nautobot:${NB_VERSION}
+# ARG PYTHON_VER=${ PYTHON_V1_VER }
+# ARG NAUTOBOT_IMAGE=nautobot:${NB_V1_VERSION}
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${{ env.NB_VERSION }}-py${{ env.PY_VERSION }} as base
+FROM networktocode/nautobot:${NB_V1_VERSION}-py${PYTHON_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -27,9 +27,9 @@ RUN pip3 install --upgrade pip wheel
 RUN pip3 install django-auth-ldap 
 
 # Check extra pip packages to install for working in jobs
-RUN pip3 install --upgrade nautobot[napalm]==${NB_VERSION}
-RUN pip3 install --upgrade nautobot[sso]==${NB_VERSION}
-RUN pip3 install --upgrade nautobot[ldap]==${NB_VERSION}
+RUN pip3 install --upgrade nautobot[napalm]==${NB_V1_VERSION}
+RUN pip3 install --upgrade nautobot[sso]==${NB_V1_VERSION}
+RUN pip3 install --upgrade nautobot[ldap]==${NB_V1_VERSION}
 RUN pip3 install --upgrade social-auth-core[openidconnect]
 RUN pip3 install --upgrade pandas
 RUN pip3 install --upgrade xlrd
@@ -44,7 +44,7 @@ RUN pip3 install --upgrade pyats
 RUN pip3 install --upgrade napalm-panos
 
 # Add / update Ansible
-RUN pip3 install --upgrade ansible-core==2.15.11
+RUN pip3 install --upgrade ansible-core==2.15.5
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon
@@ -65,7 +65,7 @@ FROM base as final
 ARG PYTHON_VER
 USER 0
 
-COPY --from=builder /usr/local/lib/python${{ env.PY_VERSION }}/site-packages /usr/local/lib/python${{ env.PY_VERSION }}/site-packages
+COPY --from=builder /usr/local/lib/python${PYTHON_VER}/site-packages /usr/local/lib/python${PYTHON_VER}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 USER nautobot
 
