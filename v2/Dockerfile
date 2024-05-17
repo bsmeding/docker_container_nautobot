@@ -1,9 +1,9 @@
-ARG PYTHON_VER=3.11
-ARG NAUTOBOT_IMAGE=nautobot:2.2
+ARG PYTHON_VER=${PYTHON_VER} 
+ARG NAUTOBOT_IMAGE=nautobot:${NB_V2_VERSION}
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/${NAUTOBOT_IMAGE}-py${PYTHON_VER} as base
+FROM networktocode/${NB_V2_VERSION}py${PYTHON_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -23,13 +23,13 @@ RUN apt-get install -y gcc && \
 RUN pip3 install --upgrade pip wheel
 
 
-#django-auth-ldap
-RUN pip3 install --upgrade ansible
+#Ansible core
+RUN pip3 install --upgrade ansible-core==2.16.15
 
 # Check extra pip packages to install
-RUN pip3 install --upgrade nautobot[napalm]
-RUN pip3 install --upgrade nautobot[sso]
-RUN pip3 install --upgrade social-auth-core[openidconnect]
+RUN pip3 install --upgrade nautobot[napalm]==${NB_V2_VERSION}
+RUN pip3 install --upgrade nautobot[sso]==${NB_V2_VERSION}
+RUN pip3 install --upgrade social-auth-core[openidconnect]==${NB_V2_VERSION}
 
 
 # Check Ansible collections

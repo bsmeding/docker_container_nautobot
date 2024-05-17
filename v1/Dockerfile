@@ -1,5 +1,5 @@
 ARG PYTHON_VER=${ PYTHON_V1_VER }
-ARG NAUTOBOT_IMAGE=nautobot:1.6
+ARG NAUTOBOT_IMAGE=nautobot:${NB_V1_VERSION}
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -27,8 +27,9 @@ RUN pip3 install --upgrade pip wheel
 RUN pip3 install django-auth-ldap 
 
 # Check extra pip packages to install for working in jobs
-RUN pip3 install --upgrade nautobot[napalm]
-RUN pip3 install --upgrade nautobot[sso]
+RUN pip3 install --upgrade nautobot[napalm]==${NB_V1_VERSION}
+RUN pip3 install --upgrade nautobot[sso]==${NB_V1_VERSION}
+RUN pip3 install --upgrade nautobot[ldap]==${NB_V1_VERSION}
 RUN pip3 install --upgrade social-auth-core[openidconnect]
 RUN pip3 install --upgrade pandas
 RUN pip3 install --upgrade xlrd
@@ -43,7 +44,7 @@ RUN pip3 install --upgrade pyats
 RUN pip3 install --upgrade napalm-panos
 
 # Add / update Ansible
-RUN pip3 install --upgrade ansible
+RUN pip3 install --upgrade ansible-core==2.15.11
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon
