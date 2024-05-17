@@ -29,9 +29,9 @@ jobs:
       #     images: ${{ matrix.image }}
       - name: Set variables
         run: |
-          NB_V1_VER=$(cat ${{ github.workspace }}/V1/VERSION)
+          NB_V1_VER=$(cat ${{ github.workspace }}/v1/VERSION)
           echo "NB_V1_VER=$NB_V1_VER" >> $GITHUB_ENV
-          PYTHON_V1_VER=$(cat V1/PYTHON_VERSION)
+          PYTHON_V1_VER=$(cat ${{ github.workspace }}/v1/PYTHON_VERSION)
           echo "PYTHON_V1_VER=$PYTHON_V1_VER" >> $GITHUB_ENV
       - name: Build and push
         uses: docker/build-push-action@v5
