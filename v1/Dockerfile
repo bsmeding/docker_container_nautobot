@@ -24,7 +24,7 @@ RUN apt-get install -y gcc && \
 RUN pip3 install --upgrade pip wheel
 
 #django-auth-ldap
-RUN pip3 install django-auth-ldap 
+# RUN pip3 install django-auth-ldap cd
 
 # Check extra pip packages to install for working in jobs
 RUN pip3 install --upgrade nautobot[napalm]==${NAUTOBOT_VER}
