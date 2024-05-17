@@ -3,7 +3,7 @@
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${env.NB_VERSION}-py${env.PY_VERSION} as base
+FROM networktocode/nautobot:${{ env.NB_VERSION }}-py${{ env.PY_VERSION }} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -65,7 +65,7 @@ FROM base as final
 ARG PYTHON_VER
 USER 0
 
-COPY --from=builder /usr/local/lib/python${env.PY_VERSION}/site-packages /usr/local/lib/python${env.PY_VERSION}/site-packages
+COPY --from=builder /usr/local/lib/python${{ env.PY_VERSION }}/site-packages /usr/local/lib/python${{ env.PY_VERSION }}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 USER nautobot
 
