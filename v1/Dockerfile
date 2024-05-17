@@ -39,8 +39,7 @@ RUN pip3 install --upgrade python-Levenshtein
 RUN pip3 install --upgrade hier-config
 RUN pip3 install --upgrade pyntc
 RUN pip3 install --upgrade pyats
-#RUN pip3 install --upgrade nautobot-ssot[infoblox]
-#RUN pip3 install --upgrade nautobot-ssot[aci]
+RUN pip3 install --upgrade nautobot-ssot==1.6.4
 RUN pip3 install --upgrade napalm-panos
 
 # Add / update Ansible
