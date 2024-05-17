@@ -46,8 +46,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ${{ github.workspace }}/${{ matrix.dockerfile }} --build-arg PYTHON_VER=${{ matrix.py_version }} --build-arg NAUTOBOT_VER=${{ matrix.nb_version }}
+          context: ${{ github.workspace }}
+          file: ${{ matrix.dockerfile }} --build-arg PYTHON_VER=${{ matrix.py_version }} --build-arg NAUTOBOT_VER=${{ matrix.nb_version }}
           push: true
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}
