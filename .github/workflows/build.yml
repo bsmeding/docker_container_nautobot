@@ -8,6 +8,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image: ['bsmeding/nautobot']
         nb_main_version: [v1, v2]
