@@ -42,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push minor release
         uses: docker/build-push-action@v5
-        if: ${{ matrix.nb_minor_only == 'true' and matrix.py_version == '3.11' }}
+        if: ${{ matrix.nb_minor_only == true and matrix.py_version == '3.11' }}
         with:
           context: .
           file: ${{ matrix.dockerfile }}
