@@ -13,9 +13,14 @@ jobs:
           - image: 'bsmeding/nautobot'
             dockerfile: v1/Dockerfile
             nb_version: '1.6.20'
-            py_version: '3.9'
-          # - image: 'bsmeding/nautobot'
-          #   dockerfile: v2/Dockerfile
+            # py_version: '3.9'
+          - image: 'bsmeding/nautobot'
+            dockerfile: v2/Dockerfile
+            nb_version: '2.2.4'
+        py_version: 
+          - '3.11'
+          - '3.10'
+          - '3.9'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,4 +62,4 @@ jobs:
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
           tags: |
-            ${{ matrix.image }}:${{ matrix.nb_version }}
+            ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
