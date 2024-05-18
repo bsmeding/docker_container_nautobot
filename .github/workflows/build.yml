@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: 'bsmeding/nautobot'
+        image: ['bsmeding/nautobot']
         nb_main_version: [v1, v2]
         py_version:
           - '3.11'
