@@ -48,3 +48,6 @@ jobs:
             NAUTOBOT_VER=${{ matrix.nb_version }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
+            if ${{ matrix.py_version }} == '3.11'
+              ${{ matrix.image }}:latest
+            end
