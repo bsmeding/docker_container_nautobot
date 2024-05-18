@@ -23,6 +23,9 @@ jobs:
             nb_main_version: 'v2'
           - nb_version: '1.6.20'
             nb_main_version: 'v1'
+          - nb_version: '1.6'
+            nb_main_version: 'v1'
+            nb_minor_only: true
           - nb_version: '2.2.4'
             nb_main_version: 'v2'
     steps:
@@ -37,8 +40,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push version
+      - name: Build and push minor release
         uses: docker/build-push-action@v5
+        if: ${{ matrix.nb_minor_only == 'true' and matrix.py_version == '3.11' }}
         with:
           context: .
           file: ${{ matrix.dockerfile }}
@@ -47,4 +51,4 @@ jobs:
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
           tags: |
-            ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
+            ${{ matrix.image }}:${{ matrix.nb_version }}
