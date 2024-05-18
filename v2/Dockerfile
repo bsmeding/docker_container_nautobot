@@ -27,9 +27,9 @@ RUN pip3 install --upgrade pip wheel
 RUN pip3 install --upgrade --no-warn-script-location ansible-core==2.15.11
 
 # Check extra pip packages to install
-RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
+RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
 
 
 # Check Ansible collections

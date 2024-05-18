@@ -1,6 +1,9 @@
 ---
     name: Regular base image update check
     on:
+      push:
+        branches:
+          - 'main'      
       schedule:
         - cron: "23 13 3 * *"
       workflow_dispatch:
