@@ -24,12 +24,12 @@ RUN pip3 install --upgrade pip wheel
 
 
 #Ansible core
-RUN pip3 install --upgrade ansible-core==2.16.15
+RUN pip3 install --upgrade --no-warn-script-location ansible-core==2.16.15
 
 # Check extra pip packages to install
-RUN pip3 install --upgrade nautobot[napalm]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade nautobot[sso]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade social-auth-core[openidconnect]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]==${NAUTOBOT_VER}
 
 
 # Check Ansible collections
@@ -37,11 +37,11 @@ RUN ansible-galaxy collection install ansible.netcommon
 RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
-RUN pip3 install --upgrade nornir-nautobot
-RUN pip3 install --no-warn-script-location nautobot-ssot==2.6.1
-RUN pip3 install --no-warn-script-location nautobot-plugin-nornir==2.0.1
-RUN pip3 install --no-warn-script-location nautobot-golden-config==2.0.4
-RUN pip3 install --no-warn-script-location nautobot-device-lifecycle-mgmt==2.1.1
+RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
+RUN pip3 install --upgrade --no-warn-script-location nautobot-ssot==2.6.1
+RUN pip3 install --upgrade --no-warn-script-location nautobot-plugin-nornir==2.0.1
+RUN pip3 install --upgrade --no-warn-script-location nautobot-golden-config==2.0.4
+RUN pip3 install --upgrade --no-warn-script-location nautobot-device-lifecycle-mgmt==2.1.1
 
 
 # ---------------------------------
