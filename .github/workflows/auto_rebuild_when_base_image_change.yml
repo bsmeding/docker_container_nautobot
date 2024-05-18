@@ -6,7 +6,7 @@
       workflow_dispatch:
       
     jobs:  
-      build:
+      check_nb_1_6_latest:
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -16,8 +16,8 @@
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v1.2.1
             with:
-              base-image: networktocode/nautobot
-              image: bsmeding/nautobot
+              base-image: networktocode/nautobot:1.6
+              image: bsmeding/nautobot:1.6
     
           # only execute subsequent steps if an update is actually NEEDED.
           # unfortunately we need to add an if-condition to all steps now
@@ -36,7 +36,11 @@
             uses: docker/build-push-action@v5.3.0
             with:
               context: "${{ github.workspace }}"
+              file: 'v1/Dockerfile'
               push: true
-              tags: bsmeding/nautobot:latest
+              build-args: |
+                PYTHON_VER=3.11
+                NAUTOBOT_VER=1.6
+              tags: bsmeding/nautobot:1.6
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
     
