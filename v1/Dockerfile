@@ -42,7 +42,7 @@ RUN pip3 install --upgrade --no-warn-script-location pyats
 RUN pip3 install --upgrade --no-warn-script-location napalm-panos
 
 # Add / update Ansible
-RUN pip3 install --upgrade ansible-core==2.15.5
+RUN pip3 install --upgrade ansible-core==2.15.11
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon
