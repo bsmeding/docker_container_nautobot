@@ -28,6 +28,9 @@ jobs:
             nb_minor_only: true
           - nb_version: '2.2.4'
             nb_main_version: 'v2'
+          - nb_version: '2.2'
+            nb_main_version: 'v2'
+            nb_minor_only: true            
     steps:
       - name: Checkout
         uses: actions/checkout@v4
