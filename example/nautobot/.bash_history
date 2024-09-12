@@ -1,0 +1,2 @@
+nautobot-server init
+exit
