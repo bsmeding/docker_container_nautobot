@@ -54,6 +54,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: bsmeding/nautobot
       - name: Build and push minor release
         uses: docker/build-push-action@v5
         if: ${{ matrix.nb_minor_only == true && matrix.py_version == '3.11' }}
