@@ -1,10 +1,13 @@
-ARG PYTHON_VER
-ARG NAUTOBOT_VER
-ARG NB_MAIN_VER='v2'
+# Set base image
+ARG BASE_IMAGE
+
+# Define build arguments
+ARG NB_MAIN_VER
+
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
+FROM ${BASE_IMAGE} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -24,17 +27,17 @@ RUN apt-get install -y gcc && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip wheel
+# Install pip and Nautobot dependencies
+RUN pip3 install --upgrade pip setuptools wheel
 
 
-#Ansible core
-RUN pip3 install --upgrade --no-warn-script-location ansible-core==2.15.11
-
-# Check extra pip packages to install
+# Install extra nautobot packages
 RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
 
+# Install latest version of Ansible
+RUN pip3 install --upgrade --no-warn-script-location ansible
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon
@@ -42,6 +45,7 @@ RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
+# Conditionally install plugins and dependencies based on NB_MAIN_VER
 RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
         pip3 install --upgrade --no-warn-script-location \
         nautobot-ssot==3.3.0 \

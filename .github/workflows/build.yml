@@ -10,41 +10,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ['bsmeding/nautobot']
-        nb_main_version: [v1, v2]
-        py_version:
-          - '3.12'
-          - '3.11'
-          - '3.10'
-          - '3.9'        
-        include:
-          - dockerfile: v1/Dockerfile
-            nb_main_version: 'v1'
-          - dockerfile: v2/Dockerfile
-            nb_main_version: 'v2'
-          - nb_version: '1.6.26'
-            nb_main_version: 'v1'               
-          - nb_version: '1.6.22'
-            nb_main_version: 'v1'            
-          - nb_version: '1.6.20'
-            nb_main_version: 'v1'
-          - nb_version: '1.6'
-            nb_main_version: 'v1'
-            nb_major_only: true
-          - nb_version: '2.1.9'
-            nb_main_version: 'v2'            
-          - nb_version: '2.2.4'
-            nb_main_version: 'v2'
-          - nb_version: '2.2'
-            nb_main_version: 'v2'
-            nb_major_only: true
-          - nb_version: '2.3'
-            nb_main_version: 'v2'
-            nb_major_only: true
-          - nb_version: '2.3.1'
-            nb_main_version: 'v2'
-          - nb_version: '2.3.2'
-            nb_main_version: 'v2'                                       
+        nautobot_image:
+          - 'networktocode/nautobot:1'
+          - 'networktocode/nautobot:1.6'
+          # - 'networktocode/nautobot:1.6-py3.9'
+          # - 'networktocode/nautobot:1.6-py3.10'
+          # - 'networktocode/nautobot:1.6-py3.11'
+          - 'networktocode/nautobot:1.6-py3.12'
+          - 'networktocode/nautobot:2'
+          # - 'networktocode/nautobot:2.3'
+          # - 'networktocode/nautobot:2.3-py3.11'
+          # - 'networktocode/nautobot:latest'                                  
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,31 +41,28 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: bsmeding/nautobot
 
-      - name: Build and push minor releases
-        if: ${{ matrix.nb_major_only == true && matrix.py_version == '3.11' }}
+      - name: Extract NB_MAIN_VER and tag
+        id: extract-tag
+        run: |
+          echo "Processing image: ${{ matrix.nautobot_image }}"
+          # Extract the main version (v1 or v2)
+          if [[ "${{ matrix.nautobot_image }}" == *":1"* ]]; then
+            echo "NB_MAIN_VER=v1" >> $GITHUB_ENV
+          else
+            echo "NB_MAIN_VER=v2" >> $GITHUB_ENV
+          fi
+          # Replace 'networktocode/' with 'bsmeding/' for the new image tag
+          CUSTOM_TAG=$(echo "${{ matrix.nautobot_image }}" | sed 's|networktocode/|bsmeding/|')
+          echo "CUSTOM_TAG=$CUSTOM_TAG" >> $GITHUB_ENV
+          echo "Custom tag created: $CUSTOM_TAG"
+          
+      - name: Build and push custom Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ${{ matrix.dockerfile }}
           push: true
           build-args: |
-            PYTHON_VER=${{ matrix.py_version }}
-            NAUTOBOT_VER=${{ matrix.nb_version }}
-            NB_MAIN_VER=${{ matrix.nb_main_version }}
+            BASE_IMAGE=${{ matrix.nautobot_image }}
+            NB_MAIN_VER=${{ env.NB_MAIN_VER }}
           tags: |
-            ${{ matrix.image }}:${{ matrix.nb_version }}
-  
-      - name: Build and push general releases
-        if: ${{ matrix.nb_major_only != true }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ matrix.dockerfile }}
-          push: true
-          build-args: |
-            PYTHON_VER=${{ matrix.py_version }}
-            NAUTOBOT_VER=${{ matrix.nb_version }}
-            NB_MAIN_VER=${{ matrix.nb_main_version }}
-          tags: |
-            ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
-  
+            ${{ env.CUSTOM_TAG }}
