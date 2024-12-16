@@ -12,15 +12,15 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - 1.6
-          - 1.6.29
+          # - 1.6
+          # - 1.6.29
           - 2.3
           - 2.3.13
           - stable
         python_version: # Quoted to prevent truncation to 3.1
           - "3.9"
-          - "3.10"
-          - "3.11"
+          # - "3.10"
+          # - "3.11"
         include:
           # Add default images (without py versions)
           - version: 1.6
@@ -70,9 +70,20 @@ jobs:
           echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
           echo "TAGS=$TAGS" >> $GITHUB_ENV
   
-      - name: Debug Info
-        run: |
-          echo "Base image: $BASE_IMAGE"
-          echo "Python version: $PYTHON_VER"
-          echo "Tags: $TAGS"
+      # - name: Debug Info
+      #   run: |
+      #     echo "Base image: $BASE_IMAGE"
+      #     echo "Python version: $PYTHON_VER"
+      #     echo "Tags: $TAGS"
   
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          build-args: |
+            BASE_IMAGE=$BASE_IMAGE
+            PYTHON_VER=$PYTHON_VER
+          tags: |
+            ${{ env.TAGS }}
