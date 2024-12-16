@@ -5,6 +5,7 @@ ARG BASE_IMAGE
 ARG NB_MAIN_VER
 ARG PYTHON_VER=3.11
 
+
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -18,6 +19,11 @@ RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 # Install network tools used by Jobs
 RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
 
+# ---------------------------------
+# Stage: Builder
+# ---------------------------------
+FROM base as builder
+
 # Extract Python version from the base image if `py` is specified
 RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
         PYTHON_VER=$(echo "$BASE_IMAGE" | grep -o 'py[0-9]\+\.[0-9]\+' | sed 's/py//'); \
@@ -26,11 +32,7 @@ RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
         echo "Defaulting to Python version: $PYTHON_VER"; \
     fi
 
-# ---------------------------------
-# Stage: Builder
-# ---------------------------------
-FROM base as builder
-
+# Install dependencies and clean APT cache
 RUN apt-get install -y gcc && \
     apt-get autoremove -y && \
     apt-get clean all && \
@@ -39,14 +41,11 @@ RUN apt-get install -y gcc && \
 # Install pip and Nautobot dependencies
 RUN pip3 install --upgrade pip setuptools wheel
 
-
 # Install extra nautobot packages
 RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-# Need to install napalm 4.0.0 to avoid conflicts with napalm-panos
-RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
 RUN pip3 install --upgrade --no-warn-script-location pandas
 RUN pip3 install --upgrade --no-warn-script-location xlrd
 RUN pip3 install --upgrade --no-warn-script-location openpyxl
@@ -55,6 +54,8 @@ RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
 RUN pip3 install --upgrade --no-warn-script-location hier-config
 RUN pip3 install --upgrade --no-warn-script-location pyntc
 RUN pip3 install --upgrade --no-warn-script-location pyats
+# Need to install napalm 4.0.0 to avoid conflicts with napalm-panos
+RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
 # RUN pip3 install --upgrade --no-warn-script-location napalm-panos
 
 # Install latest version of Ansible
