@@ -46,28 +46,10 @@ RUN apt-get install -y gcc && \
 # Install pip and Nautobot dependencies
 RUN pip3 install --upgrade pip setuptools wheel
 
-# Install extra Nautobot packages
-RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
-RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
-RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-RUN pip3 install --upgrade --no-warn-script-location pandas
-RUN pip3 install --upgrade --no-warn-script-location xlrd
-RUN pip3 install --upgrade --no-warn-script-location openpyxl
-RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
-RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
-RUN pip3 install --upgrade --no-warn-script-location hier-config
-RUN pip3 install --upgrade --no-warn-script-location pyntc
-RUN pip3 install --upgrade --no-warn-script-location pyats
-RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
-RUN pip3 install --upgrade --no-warn-script-location ansible
-
-# Install Ansible collections
-RUN ansible-galaxy collection install ansible.netcommon
-RUN ansible-galaxy collection install ansible.utils
-
-# Check Nautobot plugins
-RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
+# Verify the Python path and dependencies
+RUN export $(cat /python_version.env) && \
+    echo "Verifying Python path: /usr/local/lib/python${PYTHON_VER}/site-packages" && \
+    ls -l /usr/local/lib/python${PYTHON_VER}/site-packages || echo "Path not found!"
 
 # ---------------------------------
 # Stage: Final
