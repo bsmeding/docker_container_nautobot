@@ -5,14 +5,6 @@ ARG BASE_IMAGE
 ARG NB_MAIN_VER
 ARG PYTHON_VER=3.11
 
-# Extract Python version from the base image if `py` is specified
-RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
-        PYTHON_VER=$(echo "$BASE_IMAGE" | grep -o 'py[0-9]\+\.[0-9]\+' | sed 's/py//'); \
-        echo "Detected Python version: $PYTHON_VER"; \
-    else \
-        echo "Defaulting to Python version: $PYTHON_VER"; \
-    fi
-
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -25,6 +17,14 @@ RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 
 # Install network tools used by Jobs
 RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
+
+# Extract Python version from the base image if `py` is specified
+RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
+        PYTHON_VER=$(echo "$BASE_IMAGE" | grep -o 'py[0-9]\+\.[0-9]\+' | sed 's/py//'); \
+        echo "Detected Python version: $PYTHON_VER"; \
+    else \
+        echo "Defaulting to Python version: $PYTHON_VER"; \
+    fi
 
 # ---------------------------------
 # Stage: Builder
