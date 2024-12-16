@@ -1,27 +1,39 @@
-name: ci
+name: Build Matrix
+
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        nautobot_image:
-          # - 'networktocode/nautobot:1'
-          # - 'networktocode/nautobot:1.6'
-          # - 'networktocode/nautobot:1.6-py3.9'
-          # - 'networktocode/nautobot:1.6-py3.10'
-          # - 'networktocode/nautobot:1.6-py3.11'
-          # - 'networktocode/nautobot:1.6-py3.12'
-          # - 'networktocode/nautobot:2'
-          - 'networktocode/nautobot:2.3-py3.9'
-          # - 'networktocode/nautobot:2.3-py3.10'
-          # - 'networktocode/nautobot:2.3-py3.11'
-          # - 'networktocode/nautobot:2.3'
+        version:
+          - 1.6
+          - 1.6.29
+          - 2.3
+          - 2.3.13
+          - stable
+        python_version:
+          - 3.9
+          - 3.10
+          - 3.11
+        include:
+          # Add default images (without py versions)
+          - version: 1.6
+            python_version: default
+          - version: 1.6.29
+            python_version: default
+          - version: 2.3
+            python_version: default
+          - version: 2.3.13
+            python_version: default
+          - version: stable
+            python_version: default
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,28 +54,25 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: bsmeding/nautobot
 
-      - name: Extract NB_MAIN_VER and tag
-        id: extract-tag
+      - name: Setup Build Info
+        id: setup
         run: |
-          echo "Processing image: ${{ matrix.nautobot_image }}"
-          # Extract the main version (v1 or v2)
-          if [[ "${{ matrix.nautobot_image }}" == *":1"* ]]; then
-            echo "NB_MAIN_VER=v1" >> $GITHUB_ENV
+          if [[ "${{ matrix.python_version }}" == "default" ]]; then
+            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}"
+            PYTHON_VER="3.11" # Default Python version
+            TAGS="bsmeding/nautobot:${{ matrix.version }}" # Default tag
           else
-            echo "NB_MAIN_VER=v2" >> $GITHUB_ENV
+            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}"
+            PYTHON_VER="${{ matrix.python_version }}"
+            TAGS="bsmeding/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}" # Python-specific tag
           fi
-          # Replace 'networktocode/' with 'bsmeding/' for the new image tag
-          CUSTOM_TAG=$(echo "${{ matrix.nautobot_image }}" | sed 's|networktocode/|bsmeding/|')
-          echo "CUSTOM_TAG=$CUSTOM_TAG" >> $GITHUB_ENV
-          echo "Custom tag created: $CUSTOM_TAG"
-          
-      - name: Build and push custom Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          build-args: |
-            BASE_IMAGE=${{ matrix.nautobot_image }}
-            NB_MAIN_VER=${{ env.NB_MAIN_VER }}
-          tags: |
-            ${{ env.CUSTOM_TAG }}
+          echo "BASE_IMAGE=$BASE_IMAGE" >> $GITHUB_ENV
+          echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+  
+      - name: Debug Info
+        run: |
+          echo "Base image: $BASE_IMAGE"
+          echo "Python version: $PYTHON_VER"
+          echo "Tags: $TAGS"
+  
