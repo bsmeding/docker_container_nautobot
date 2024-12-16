@@ -75,7 +75,10 @@ jobs:
       #     echo "Base image: $BASE_IMAGE"
       #     echo "Python version: $PYTHON_VER"
       #     echo "Tags: $TAGS"
-  
+
+      - name: Debug Docker Args
+        run: echo "BASE_IMAGE=$BASE_IMAGE"
+
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
