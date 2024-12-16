@@ -41,10 +41,10 @@ RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
-RUN pip3 install --upgrade --no-warn-script-location nautobot-ssot==2.6.1
-RUN pip3 install --upgrade --no-warn-script-location nautobot-plugin-nornir==2.0.1
-RUN pip3 install --upgrade --no-warn-script-location nautobot-golden-config==2.0.4
-RUN pip3 install --upgrade --no-warn-script-location nautobot-device-lifecycle-mgmt==2.1.1
+RUN pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot-plugin-nornir==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot-golden-config==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot-device-lifecycle-mgmt==${NAUTOBOT_VER}
 
 
 # ---------------------------------

@@ -30,6 +30,8 @@ jobs:
           - nb_version: '1.6'
             nb_main_version: 'v1'
             nb_minor_only: true
+          - nb_version: '2.1.9'
+            nb_main_version: 'v2'            
           - nb_version: '2.2.4'
             nb_main_version: 'v2'
           - nb_version: '2.2'
