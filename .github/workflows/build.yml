@@ -25,11 +25,7 @@ jobs:
           # Add default images (without py versions)
           - version: 1.6
             python_version: default
-          - version: 1.6.29
-            python_version: default
           - version: 2.3
-            python_version: default
-          - version: 2.3.13
             python_version: default
           - version: stable
             python_version: default
@@ -70,11 +66,11 @@ jobs:
           echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
           echo "TAGS=$TAGS" >> $GITHUB_ENV
   
-      # - name: Debug Info
-      #   run: |
-      #     echo "Base image: $BASE_IMAGE"
-      #     echo "Python version: $PYTHON_VER"
-      #     echo "Tags: $TAGS"
+      - name: Debug Info
+        run: |
+          echo "Base image: $BASE_IMAGE"
+          echo "Python version: $PYTHON_VER"
+          echo "Tags: $TAGS"
 
       - name: Debug Docker Args
         run: echo "BASE_IMAGE=$BASE_IMAGE"
