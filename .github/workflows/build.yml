@@ -74,7 +74,7 @@ jobs:
           push: true
           build-args: |
             NAUTOBOT_VER=${{ matrix.version }}
-            PYTHON_VER=$PYTHON_VER
+            PYTHON_VER=${{ env.PYTHON_VER }}
           tags: |
             bsmeding/nautobot:${{ matrix.version }}${{ matrix.python_version == 'default' && '' || '-py' }}${{ matrix.python_version }}
   
