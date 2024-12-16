@@ -1,6 +1,6 @@
 ARG PYTHON_VER
 ARG NAUTOBOT_VER
-ARG NB_MAJOR_ONLY=false
+ARG NB_MAIN_VER='v2'
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -42,11 +42,28 @@ RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
-RUN if [ "$NB_MAJOR_ONLY" = "true" ]; then \
-        pip3 install --upgrade --no-warn-script-location nautobot-ssot nautobot-plugin-nornir nautobot-golden-config nautobot-device-lifecycle-mgmt; \
-        
+RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
+        pip3 install --upgrade --no-warn-script-location \
+        nautobot-ssot==3.3.0 \
+        nautobot-ssot[all] \
+        nautobot-bgp-models==2.3.0 \
+        nautobot-plugin-nornir==2.1.0 \
+        nautobot-golden-config==2.2.1 \
+        nautobot-device-lifecycle-mgmt==2.2.0 \
+        nautobot-device-onboarding==4.1.0 \
+        nautobot-data-validation-engine==3.2.0 \
+        nautobot-plugin-floorplan==2.4.0; \
     else \
-        pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER} nautobot-plugin-nornir==${NAUTOBOT_VER} nautobot-golden-config==${NAUTOBOT_VER} nautobot-device-lifecycle-mgmt==${NAUTOBOT_VER}; \
+        pip3 install --upgrade --no-warn-script-location \
+        nautobot-ssot==1.6.4 \
+        nautobot-ssot[all] \
+        nautobot-bgp-models==1.0.0 \
+        nautobot-plugin-nornir==1.0.5 \
+        nautobot-golden-config==1.6.4 \
+        nautobot-device-lifecycle-mgmt==1.6.1 \
+        nautobot-device-onboarding==1.2.0 \
+        nautobot-data-validation-engine==2.2.0 \
+        nautobot-plugin-floorplan==1.0.0; \
     fi
 
 # ---------------------------------

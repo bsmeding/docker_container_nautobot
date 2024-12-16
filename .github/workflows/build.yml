@@ -75,7 +75,7 @@ jobs:
           build-args: |
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
-            NB_MAJOR_ONLY=${{ matrix.nb_major_only }}
+            NB_MAIN_VER=${{ matrix.nb_main_version }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}
   
@@ -89,7 +89,7 @@ jobs:
           build-args: |
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
-            NB_MAJOR_ONLY=${{ matrix.nb_major_only }}
+            NB_MAIN_VER=${{ matrix.nb_main_version }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
   
