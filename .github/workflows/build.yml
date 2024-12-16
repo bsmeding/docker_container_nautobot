@@ -48,10 +48,8 @@ jobs:
           # Extract the main version (v1 or v2)
           if [[ "${{ matrix.nautobot_image }}" == *":1"* ]]; then
             echo "NB_MAIN_VER=v1" >> $GITHUB_ENV
-            echo "DOCKERFILE_PATH=./V1/Dockerfile" >> $GITHUB_ENV
           else
             echo "NB_MAIN_VER=v2" >> $GITHUB_ENV
-            echo "DOCKERFILE_PATH=./V2/Dockerfile" >> $GITHUB_ENV
           fi
           # Replace 'networktocode/' with 'bsmeding/' for the new image tag
           CUSTOM_TAG=$(echo "${{ matrix.nautobot_image }}" | sed 's|networktocode/|bsmeding/|')
@@ -62,7 +60,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ${{ env.DOCKERFILE_PATH }}
           push: true
           build-args: |
             BASE_IMAGE=${{ matrix.nautobot_image }}
