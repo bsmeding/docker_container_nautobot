@@ -2,13 +2,6 @@
 ARG NAUTOBOT_VER
 ARG PYTHON_VER
 
-ARG NAUTOBOT_MAIN_VER
-RUN export NAUTOBOT_MAIN_VER=$(echo $NAUTOBOT_VER | cut -d '.' -f 1) && \
-    echo "Main version: $NAUTOBOT_MAIN_VER" > /nautobot_main_version.env
-
-# Debug: Verify extracted main version
-RUN cat /nautobot_main_version.env
-
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
