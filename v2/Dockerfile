@@ -1,5 +1,6 @@
 ARG PYTHON_VER
 ARG NAUTOBOT_VER
+ARG NB_MAJOR_ONLY=false
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
@@ -41,6 +42,11 @@ RUN ansible-galaxy collection install ansible.utils
 
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
+RUN if [ "$NB_MAJOR_ONLY" = "true" ]; then \
+        pip3 install --upgrade --no-warn-script-location nautobot-ssot; \
+    else \
+        pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER}; \
+    fi
 RUN pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER}
 RUN pip3 install --upgrade --no-warn-script-location nautobot-plugin-nornir==${NAUTOBOT_VER}
 RUN pip3 install --upgrade --no-warn-script-location nautobot-golden-config==${NAUTOBOT_VER}

@@ -30,17 +30,17 @@ jobs:
             nb_main_version: 'v1'
           - nb_version: '1.6'
             nb_main_version: 'v1'
-            nb_minor_only: true
+            nb_major_only: true
           - nb_version: '2.1.9'
             nb_main_version: 'v2'            
           - nb_version: '2.2.4'
             nb_main_version: 'v2'
           - nb_version: '2.2'
             nb_main_version: 'v2'
-            nb_minor_only: true
+            nb_major_only: true
           - nb_version: '2.3'
             nb_main_version: 'v2'
-            nb_minor_only: true
+            nb_major_only: true
           - nb_version: '2.3.1'
             nb_main_version: 'v2'
           - nb_version: '2.3.2'
@@ -66,7 +66,7 @@ jobs:
           repository: bsmeding/nautobot
 
       - name: Build and push minor releases
-        if: ${{ matrix.nb_minor_only == true && matrix.py_version == '3.11' }}
+        if: ${{ matrix.nb_major_only == true && matrix.py_version == '3.11' }}
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -75,11 +75,12 @@ jobs:
           build-args: |
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
+            NB_MAJOR_ONLY=${{ matrix.nb_major_only }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}
   
       - name: Build and push general releases
-        if: ${{ matrix.nb_minor_only != true }}
+        if: ${{ matrix.nb_major_only != true }}
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -88,6 +89,7 @@ jobs:
           build-args: |
             PYTHON_VER=${{ matrix.py_version }}
             NAUTOBOT_VER=${{ matrix.nb_version }}
+            NB_MAJOR_ONLY=${{ matrix.nb_major_only }}
           tags: |
             ${{ matrix.image }}:${{ matrix.nb_version }}-py${{ matrix.py_version }}
   
