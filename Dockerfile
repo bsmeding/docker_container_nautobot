@@ -7,6 +7,7 @@ ARG PYTHON_VER
 # ---------------------------------
 FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
 ARG NAUTOBOT_VER
+
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
@@ -62,6 +63,17 @@ RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
 # Use the main version for conditional operations
 RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
         pip3 install --upgrade --no-warn-script-location \
+        nautobot-ssot==1.6.4 \
+        nautobot-ssot[all] \
+        nautobot-bgp-models==1.0.0 \
+        nautobot-plugin-nornir==1.0.5 \
+        nautobot-golden-config==1.6.4 \
+        nautobot-device-lifecycle-mgmt==1.6.1 \
+        nautobot-device-onboarding==1.2.0 \
+        nautobot-data-validation-engine==2.2.0 \
+        # nautobot-plugin-floorplan==1.0.0; \
+    else \
+        pip3 install --upgrade --no-warn-script-location \
         nautobot-ssot==3.3.0 \
         nautobot-ssot[all] \
         nautobot-bgp-models==2.3.0 \
@@ -71,18 +83,31 @@ RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
         nautobot-device-onboarding==4.1.0 \
         nautobot-data-validation-engine==3.2.0 \
         nautobot-plugin-floorplan==2.4.0; \
-    else \
-        pip3 install --upgrade --no-warn-script-location \
-        nautobot-ssot==1.6.4 \
-        nautobot-ssot[all] \
-        nautobot-bgp-models==1.0.0 \
-        nautobot-plugin-nornir==1.0.5 \
-        nautobot-golden-config==1.6.4 \
-        nautobot-device-lifecycle-mgmt==1.6.1 \
-        nautobot-device-onboarding==1.2.0 \
-        nautobot-data-validation-engine==2.2.0 \
-        nautobot-plugin-floorplan==1.0.0; \
     fi
+
+# RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==3.3.0 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==2.3.0 \
+#         nautobot-plugin-nornir==2.1.0 \
+#         nautobot-golden-config==2.2.1 \
+#         nautobot-device-lifecycle-mgmt==2.2.0 \
+#         nautobot-device-onboarding==4.1.0 \
+#         nautobot-data-validation-engine==3.2.0 \
+#         nautobot-plugin-floorplan==2.4.0; \
+#     else \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==1.6.4 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==1.0.0 \
+#         nautobot-plugin-nornir==1.0.5 \
+#         nautobot-golden-config==1.6.4 \
+#         nautobot-device-lifecycle-mgmt==1.6.1 \
+#         nautobot-device-onboarding==1.2.0 \
+#         nautobot-data-validation-engine==2.2.0 \
+#         nautobot-plugin-floorplan==1.0.0; \
+#     fi
 
 # ---------------------------------
 # Stage: Final
