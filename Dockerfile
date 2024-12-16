@@ -1,13 +1,11 @@
-# Set base image
-ARG BASE_IMAGE
-
-# Define build arguments
-ARG PYTHON_VER=3.11
+# Define dynamic arguments
+ARG NAUTOBOT_VER
+ARG PYTHON_VER
 
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM ${BASE_IMAGE} as base
+FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
