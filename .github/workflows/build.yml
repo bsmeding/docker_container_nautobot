@@ -11,14 +11,14 @@ jobs:
       fail-fast: false
       matrix:
         nautobot_image:
-          - 'networktocode/nautobot:1'
+          # - 'networktocode/nautobot:1'
           - 'networktocode/nautobot:1.6'
           # - 'networktocode/nautobot:1.6-py3.9'
           # - 'networktocode/nautobot:1.6-py3.10'
           # - 'networktocode/nautobot:1.6-py3.11'
           - 'networktocode/nautobot:1.6-py3.12'
           - 'networktocode/nautobot:2'
-          # - 'networktocode/nautobot:2.3'
+          - 'networktocode/nautobot:2.3'
           # - 'networktocode/nautobot:2.3-py3.11'
           # - 'networktocode/nautobot:latest'                                  
     steps:

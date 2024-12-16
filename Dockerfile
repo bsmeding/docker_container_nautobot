@@ -56,29 +56,29 @@ RUN ansible-galaxy collection install ansible.utils
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 # Conditionally install plugins and dependencies based on NB_MAIN_VER
-RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
-        pip3 install --upgrade --no-warn-script-location \
-        nautobot-ssot==3.3.0 \
-        nautobot-ssot[all] \
-        nautobot-bgp-models==2.3.0 \
-        nautobot-plugin-nornir==2.1.0 \
-        nautobot-golden-config==2.2.1 \
-        nautobot-device-lifecycle-mgmt==2.2.0 \
-        nautobot-device-onboarding==4.1.0 \
-        nautobot-data-validation-engine==3.2.0 \
-        nautobot-plugin-floorplan==2.4.0; \
-    else \
-        pip3 install --upgrade --no-warn-script-location \
-        nautobot-ssot==1.6.4 \
-        nautobot-ssot[all] \
-        nautobot-bgp-models==1.0.0 \
-        nautobot-plugin-nornir==1.0.5 \
-        nautobot-golden-config==1.6.4 \
-        nautobot-device-lifecycle-mgmt==1.6.1 \
-        nautobot-device-onboarding==1.2.0 \
-        nautobot-data-validation-engine==2.2.0 \
-        nautobot-plugin-floorplan==1.0.0; \
-    fi
+# RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==3.3.0 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==2.3.0 \
+#         nautobot-plugin-nornir==2.1.0 \
+#         nautobot-golden-config==2.2.1 \
+#         nautobot-device-lifecycle-mgmt==2.2.0 \
+#         nautobot-device-onboarding==4.1.0 \
+#         nautobot-data-validation-engine==3.2.0 \
+#         nautobot-plugin-floorplan==2.4.0; \
+#     else \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==1.6.4 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==1.0.0 \
+#         nautobot-plugin-nornir==1.0.5 \
+#         nautobot-golden-config==1.6.4 \
+#         nautobot-device-lifecycle-mgmt==1.6.1 \
+#         nautobot-device-onboarding==1.2.0 \
+#         nautobot-data-validation-engine==2.2.0 \
+#         nautobot-plugin-floorplan==1.0.0; \
+#     fi
 
 # ---------------------------------
 # Stage: Final
