@@ -45,6 +45,8 @@ RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
+# Need to install napalm 4.0.0 to avoid conflicts with nornir-nautobot
+RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
 RUN pip3 install --upgrade --no-warn-script-location pandas
 RUN pip3 install --upgrade --no-warn-script-location xlrd
 RUN pip3 install --upgrade --no-warn-script-location openpyxl
