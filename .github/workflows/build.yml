@@ -54,26 +54,24 @@ jobs:
         id: setup
         run: |
           if [[ "${{ matrix.python_version }}" == "default" ]]; then
-            BASE_IMAGE="nautobot:${{ matrix.version }}"
+            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}"
             PYTHON_VER="3.11" # Default Python version
             TAGS="bsmeding/nautobot:${{ matrix.version }}" # Default tag
           else
-            BASE_IMAGE="nautobot:${{ matrix.version }}-py${{ matrix.python_version }}"
+            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}"
             PYTHON_VER="${{ matrix.python_version }}"
             TAGS="bsmeding/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}" # Python-specific tag
           fi
           echo "BASE_IMAGE=$BASE_IMAGE" >> $GITHUB_ENV
           echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
           echo "TAGS=$TAGS" >> $GITHUB_ENV
-  
+        
       - name: Debug Info
         run: |
           echo "Base image: $BASE_IMAGE"
           echo "Python version: $PYTHON_VER"
           echo "Tags: $TAGS"
 
-      - name: Debug Docker Args
-        run: echo "BASE_IMAGE=$BASE_IMAGE"
 
       - name: Build and Push Image
         uses: docker/build-push-action@v5
@@ -86,3 +84,4 @@ jobs:
             PYTHON_VER=$PYTHON_VER
           tags: |
             ${{ env.TAGS }}
+        

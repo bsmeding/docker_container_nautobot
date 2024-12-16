@@ -2,13 +2,12 @@
 ARG BASE_IMAGE
 
 # Define build arguments
-ARG NB_MAIN_VER
 ARG PYTHON_VER=3.11
 
 # ---------------------------------
 # Stage: PreRequistics
 # ---------------------------------
-FROM networktocode/${BASE_IMAGE} as base
+FROM ${BASE_IMAGE} as base
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
