@@ -6,6 +6,7 @@ ARG PYTHON_VER
 # Stage: PreRequistics
 # ---------------------------------
 FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
+ARG NAUTOBOT_VER
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
