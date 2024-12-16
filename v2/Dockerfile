@@ -43,15 +43,11 @@ RUN ansible-galaxy collection install ansible.utils
 # Check Nautobot plugins
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 RUN if [ "$NB_MAJOR_ONLY" = "true" ]; then \
-        pip3 install --upgrade --no-warn-script-location nautobot-ssot; \
+        pip3 install --upgrade --no-warn-script-location nautobot-ssot nautobot-plugin-nornir nautobot-golden-config nautobot-device-lifecycle-mgmt; \
+        
     else \
-        pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER}; \
+        pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER} nautobot-plugin-nornir==${NAUTOBOT_VER} nautobot-golden-config==${NAUTOBOT_VER} nautobot-device-lifecycle-mgmt==${NAUTOBOT_VER}; \
     fi
-RUN pip3 install --upgrade --no-warn-script-location nautobot-ssot==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location nautobot-plugin-nornir==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location nautobot-golden-config==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location nautobot-device-lifecycle-mgmt==${NAUTOBOT_VER}
-
 
 # ---------------------------------
 # Stage: Final
