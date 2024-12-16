@@ -45,7 +45,7 @@ RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-# Need to install napalm 4.0.0 to avoid conflicts with nornir-nautobot
+# Need to install napalm 4.0.0 to avoid conflicts with napalm-panos
 RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
 RUN pip3 install --upgrade --no-warn-script-location pandas
 RUN pip3 install --upgrade --no-warn-script-location xlrd
@@ -55,7 +55,7 @@ RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
 RUN pip3 install --upgrade --no-warn-script-location hier-config
 RUN pip3 install --upgrade --no-warn-script-location pyntc
 RUN pip3 install --upgrade --no-warn-script-location pyats
-RUN pip3 install --upgrade --no-warn-script-location napalm-panos
+# RUN pip3 install --upgrade --no-warn-script-location napalm-panos
 
 # Install latest version of Ansible
 RUN pip3 install --upgrade --no-warn-script-location ansible
