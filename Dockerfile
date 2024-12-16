@@ -65,8 +65,7 @@ RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 # Conditionally install plugins and dependencies based on NB_MAIN_VER
 
 # Use the main version for conditional operations
-RUN export NAUTOBOT_MAIN_VER=$(cat /nautobot_main_version.env) && \
-    if [ "$NAUTOBOT_MAIN_VER" = "1" ]; then \
+RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
         pip3 install --upgrade --no-warn-script-location \
         nautobot-ssot==1.6.4 \
         nautobot-ssot[all] \
@@ -77,7 +76,7 @@ RUN export NAUTOBOT_MAIN_VER=$(cat /nautobot_main_version.env) && \
         nautobot-device-onboarding==1.2.0 \
         nautobot-data-validation-engine==2.2.0 \
         nautobot-plugin-floorplan==1.0.0; \
-    elif [ "$NAUTOBOT_MAIN_VER" = "2" ]; then \
+    elif echo "$NAUTOBOT_VER" | grep -q '^2\.'; then \
         pip3 install --upgrade --no-warn-script-location \
         nautobot-ssot==3.3.0 \
         nautobot-ssot[all] \
@@ -89,10 +88,10 @@ RUN export NAUTOBOT_MAIN_VER=$(cat /nautobot_main_version.env) && \
         nautobot-data-validation-engine==3.2.0 \
         nautobot-plugin-floorplan==2.4.0; \
     else \
-        echo "Unknown Nautobot version"; \
+        echo "Unknown Nautobot version: $NAUTOBOT_VER"; \
         exit 1; \
     fi
-
+  
 
 # RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
 #         pip3 install --upgrade --no-warn-script-location \
