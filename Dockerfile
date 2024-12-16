@@ -24,14 +24,6 @@ RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
 # ---------------------------------
 FROM base as builder
 
-# Extract Python version from the base image if `py` is specified
-RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
-        PYTHON_VER=$(echo "$BASE_IMAGE" | grep -o 'py[0-9]\+\.[0-9]\+' | sed 's/py//'); \
-        echo "Detected Python version: $PYTHON_VER"; \
-    else \
-        echo "Defaulting to Python version: $PYTHON_VER"; \
-    fi
-
 # Install dependencies and clean APT cache
 RUN apt-get install -y gcc && \
     apt-get autoremove -y && \
@@ -98,6 +90,13 @@ RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 FROM base as final
 ARG PYTHON_VER
 USER 0
+
+RUN if echo "$BASE_IMAGE" | grep -q 'py'; then \
+        PYTHON_VER=$(echo "$BASE_IMAGE" | grep -o 'py[0-9]\+\.[0-9]\+' | sed 's/py//'); \
+        echo "Detected Python version from base image: $PYTHON_VER"; \
+    else \
+        echo "No Python version specified in base image. Defaulting to: $PYTHON_VER"; \
+    fi
 
 COPY --from=builder /usr/local/lib/python${PYTHON_VER}/site-packages /usr/local/lib/python${PYTHON_VER}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
