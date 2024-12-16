@@ -55,16 +55,20 @@ jobs:
         run: |
           if [[ "${{ matrix.python_version }}" == "default" ]]; then
             PYTHON_VER="3.11" # Default Python version
+            TAGS="bsmeding/nautobot:${{ matrix.version }}" # Default tag
           else
             PYTHON_VER="${{ matrix.python_version }}"
+            TAGS="bsmeding/nautobot:${{ matrix.version }}-py${PYTHON_VER}" # Python-specific tag
           fi
           echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
-          echo "NAUTOBOT_VER=${{ matrix.version }}" >> $GITHUB_ENV          
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+          echo "NAUTOBOT_VER=${{ matrix.version }}" >> $GITHUB_ENV   
 
       - name: Debug Info
         run: |
           echo "Nautobot version: ${{ matrix.version }}"
           echo "Python version: $PYTHON_VER"
+          echo "Tags: $TAGS"
   
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
@@ -76,5 +80,4 @@ jobs:
             NAUTOBOT_VER=${{ matrix.version }}
             PYTHON_VER=${{ env.PYTHON_VER }}
           tags: |
-            bsmeding/nautobot:${{ matrix.version }}${{ matrix.python_version == 'default' && '' || '-py' }}${{ matrix.python_version }}
-  
+            ${{ env.TAGS }}
