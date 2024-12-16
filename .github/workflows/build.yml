@@ -54,11 +54,11 @@ jobs:
         id: setup
         run: |
           if [[ "${{ matrix.python_version }}" == "default" ]]; then
-            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}"
+            BASE_IMAGE="nautobot:${{ matrix.version }}"
             PYTHON_VER="3.11" # Default Python version
             TAGS="bsmeding/nautobot:${{ matrix.version }}" # Default tag
           else
-            BASE_IMAGE="networktocode/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}"
+            BASE_IMAGE="nautobot:${{ matrix.version }}-py${{ matrix.python_version }}"
             PYTHON_VER="${{ matrix.python_version }}"
             TAGS="bsmeding/nautobot:${{ matrix.version }}-py${{ matrix.python_version }}" # Python-specific tag
           fi
