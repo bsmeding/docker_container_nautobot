@@ -19,10 +19,16 @@ Nautobot docker container including other networking tools
 
 ## Nautobot plugins
 * nornir-nautobot
-* nautobot-ssot
-* nautobot-plugin-nornir
-* nautobot-golden-config
-* nautobot-device-lifecycle-mgmt
+* [nautobot-ssot](https://docs.nautobot.com/projects/ssot/en/latest/)
+* [nautobot-plugin-nornir](https://docs.nautobot.com/projects/plugin-nornir/en/latest/)
+* [nautobot-golden-config](https://docs.nautobot.com/projects/golden-config/en/latest/)
+* [nautobot-device-lifecycle-mgmt](https://docs.nautobot.com/projects/device-lifecycle/en/latest/)
+* [nautobot-bgp-models](https://docs.nautobot.com/projects/bgp-models/en/latest/)
+* [nautobot-device-onboarding](https://docs.nautobot.com/projects/device-onboarding/en/latest/)
+* [nautobot-data-validation-engine]()
+* [nautobot-plugin-floorplan](https://docs.nautobot.com/projects/floor-plan/en/latest/)
+* [nautobot-firewall-models](https://docs.nautobot.com/projects/firewall-models/en/latest/)
+* [todo: chatops](https://docs.nautobot.com/projects/chatops/en/latest/)
 
 # More flexibility needed?
 If you need more flexibility, please take a look at my Ansible role to deploy Nautobot on Docker![here](https://github.com/bsmeding/ansible_role_nautobot_docker) or via [Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/bsmeding/nautobot_docker/)

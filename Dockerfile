@@ -83,6 +83,8 @@ RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
         nautobot-device-onboarding==4.1.0 \
         nautobot-data-validation-engine==3.2.0 \
         nautobot-plugin-floorplan==2.4.0; \
+        nautobot-firewall-models==2.2.0; \
+        nautobot-chatops==3.1.1; \
     fi
 
 # RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
