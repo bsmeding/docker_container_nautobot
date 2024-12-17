@@ -71,7 +71,6 @@ RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
         nautobot-device-lifecycle-mgmt==1.6.1 \
         nautobot-device-onboarding==1.2.0 \
         nautobot-data-validation-engine==2.2.0 \
-        # nautobot-plugin-floorplan==1.0.0; \
     else \
         pip3 install --upgrade --no-warn-script-location \
         nautobot-ssot==3.3.0 \

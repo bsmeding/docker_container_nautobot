@@ -40,6 +40,10 @@ jobs:
             python_version: default
           - version: 2.3
             python_version: default
+          - version: stable
+            python_version: default
+          - version: latest
+            python_version: default                        
     steps:
       - name: Checkout
         uses: actions/checkout@v4
