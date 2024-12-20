@@ -9,10 +9,10 @@ FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
 ARG NAUTOBOT_VER
 
 USER 0
-# RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
 # Root install SAML dependencies # Removed llibxmlsec1-dev 17-09-23
-# RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
+RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 
 # Install network tools used by Jobs
 # RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
