@@ -35,12 +35,14 @@ RUN pip3 install --upgrade pip setuptools wheel
 # RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
 # RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]"
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[saml]
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 RUN pip3 install --upgrade --no-warn-script-location nautobot-netbox-importer
 
-
+# Install Nautobot external authentication providers
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[saml]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[azuread]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[google]
 
 # Install custom packages used in Jobs
 # RUN pip3 install --upgrade --no-warn-script-location napalm
