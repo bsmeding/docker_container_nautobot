@@ -51,11 +51,11 @@ RUN pip3 install --upgrade --no-warn-script-location pyats
 
 
 # Install Ansible core
-# RUN pip3 install --upgrade --no-warn-script-location ansible-core
+RUN pip3 install --upgrade --no-warn-script-location ansible-core
 
-# # Check Ansible collections
-# RUN ansible-galaxy collection install ansible.netcommon
-# RUN ansible-galaxy collection install ansible.utils
+# Check Ansible collections
+RUN ansible-galaxy collection install ansible.netcommon
+RUN ansible-galaxy collection install ansible.utils
 
 
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
