@@ -34,8 +34,8 @@ jobs:
           # Add default images (without py versions)
           # - version: 1.6
           #   python_version: default
-          # - version: 2.1
-          #   python_version: default
+          - version: 2.1
+            python_version: default
           # - version: 2.2
           #   python_version: default
           # - version: 2.3
