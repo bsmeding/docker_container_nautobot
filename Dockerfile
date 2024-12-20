@@ -40,14 +40,14 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install custom packages used in Jobs
 # RUN pip3 install --upgrade --no-warn-script-location napalm
-# RUN pip3 install --upgrade --no-warn-script-location pandas
-# RUN pip3 install --upgrade --no-warn-script-location xlrd
-# RUN pip3 install --upgrade --no-warn-script-location openpyxl
-# RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
-# RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
-# RUN pip3 install --upgrade --no-warn-script-location hier-config
-# RUN pip3 install --upgrade --no-warn-script-location pyntc
-# RUN pip3 install --upgrade --no-warn-script-location pyats
+RUN pip3 install --upgrade --no-warn-script-location pandas
+RUN pip3 install --upgrade --no-warn-script-location xlrd
+RUN pip3 install --upgrade --no-warn-script-location openpyxl
+RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
+RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
+RUN pip3 install --upgrade --no-warn-script-location hier-config
+RUN pip3 install --upgrade --no-warn-script-location pyntc
+RUN pip3 install --upgrade --no-warn-script-location pyats
 
 
 # Install Ansible core
