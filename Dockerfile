@@ -9,13 +9,13 @@ FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
 ARG NAUTOBOT_VER
 
 USER 0
-RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+# RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 
 # Root install SAML dependencies # Removed llibxmlsec1-dev 17-09-23
-RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
+# RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 
 # Install network tools used by Jobs
-RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
+# RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
 
 # ---------------------------------
 # Stage: Builder
@@ -32,11 +32,11 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 
 # Install extra nautobot packages
-RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
-RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
-RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
-RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
+# RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
+# RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
+# RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
+# RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
+# RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
 
 # Install custom packages used in Jobs
 # RUN pip3 install --upgrade --no-warn-script-location napalm
@@ -51,11 +51,11 @@ RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconn
 
 
 # Install Ansible core
-RUN pip3 install --upgrade --no-warn-script-location ansible-core
+# RUN pip3 install --upgrade --no-warn-script-location ansible-core
 
-# Check Ansible collections
-RUN ansible-galaxy collection install ansible.netcommon
-RUN ansible-galaxy collection install ansible.utils
+# # Check Ansible collections
+# RUN ansible-galaxy collection install ansible.netcommon
+# RUN ansible-galaxy collection install ansible.utils
 
 
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
