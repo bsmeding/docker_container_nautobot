@@ -32,9 +32,9 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 
 # Install extra nautobot packages
-# RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
-# RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
-# RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]"
+RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
+RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
+RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]"
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 RUN pip3 install --upgrade --no-warn-script-location nautobot-netbox-importer
 
