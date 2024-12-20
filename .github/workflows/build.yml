@@ -90,6 +90,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          no-cache: true
           build-args: |
             NAUTOBOT_VER=${{ matrix.version }}
             PYTHON_VER=${{ env.PYTHON_VER }}
