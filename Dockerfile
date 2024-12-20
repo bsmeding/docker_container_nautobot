@@ -35,63 +35,67 @@ RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[sso]
 RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
+RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-# Need to install napalm 4.0.0 to avoid conflicts with napalm-panos
-RUN pip3 install --upgrade --no-warn-script-location napalm==4.0.0
-RUN pip3 install --upgrade --no-warn-script-location pandas
-RUN pip3 install --upgrade --no-warn-script-location xlrd
-RUN pip3 install --upgrade --no-warn-script-location openpyxl
-RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
-RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
-RUN pip3 install --upgrade --no-warn-script-location hier-config
-RUN pip3 install --upgrade --no-warn-script-location pyntc
-RUN pip3 install --upgrade --no-warn-script-location pyats
-# RUN pip3 install --upgrade --no-warn-script-location napalm-panos
 
-# Install latest version of Ansible
+# Install custom packages used in Jobs
+# RUN pip3 install --upgrade --no-warn-script-location napalm
+# RUN pip3 install --upgrade --no-warn-script-location pandas
+# RUN pip3 install --upgrade --no-warn-script-location xlrd
+# RUN pip3 install --upgrade --no-warn-script-location openpyxl
+# RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
+# RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
+# RUN pip3 install --upgrade --no-warn-script-location hier-config
+# RUN pip3 install --upgrade --no-warn-script-location pyntc
+# RUN pip3 install --upgrade --no-warn-script-location pyats
+
+
+# Install Ansible core
 RUN pip3 install --upgrade --no-warn-script-location ansible-core
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon
 RUN ansible-galaxy collection install ansible.utils
 
-# Check Nautobot plugins
-RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
-# Conditionally install plugins and dependencies based on NB_MAIN_VER
 
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
 # Use the main version for conditional operations
-RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
-        pip3 install --upgrade --no-warn-script-location \
-        nautobot-ssot==1.6.4 \
-        nautobot-ssot[all] \
-        nautobot-bgp-models==1.0.0 \
-        nautobot-plugin-nornir==1.0.5 \
-        nautobot-golden-config==1.6.4 \
-        nautobot-device-lifecycle-mgmt==1.6.1 \
-        nautobot-device-onboarding==1.2.0 \
-        nautobot-data-validation-engine==2.2.0 \
-    else \
-        pip3 install --upgrade --no-warn-script-location \
-        nautobot-plugin-nornir==2.1.0 \
-        nautobot-golden-config==2.2.1 \
-        nautobot-ssot==3.3.0 \
-        nautobot-ssot[all] \
-    fi
+# RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==1.6.4 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==1.0.0 \
+#         nautobot-plugin-nornir==1.0.5 \
+#         nautobot-golden-config==1.6.4 \
+#         nautobot-device-lifecycle-mgmt==1.6.1 \
+#         nautobot-device-onboarding==1.2.0 \
+#         nautobot-data-validation-engine==2.2.0 \
+#     else \
+#         pip3 install --upgrade --no-warn-script-location \
+#         nautobot-ssot==3.3.0 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==2.3.0 \
+#         nautobot-plugin-nornir==2.1.0 \
+#         nautobot-golden-config==2.2.1 \
+#         nautobot-device-lifecycle-mgmt==2.2.0 \
+#         nautobot-device-onboarding==4.1.0 \
+#         nautobot-data-validation-engine==3.2.0 \
+#         nautobot-plugin-floorplan==2.4.0; \
+#         nautobot-firewall-models==2.2.0; \
+#         nautobot-chatops==3.1.1; \
+#     fi
 
 # RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
 #         pip3 install --upgrade --no-warn-script-location \
-        # nautobot-plugin-nornir==2.1.0 \
-        # nautobot-golden-config==2.2.1 \
-        # nautobot-ssot==3.3.0 \
-        # nautobot-ssot[all] \
-        # nautobot-bgp-models==2.3.0 \
-        # nautobot-device-lifecycle-mgmt==2.2.0 \
-        # nautobot-device-onboarding==4.1.0 \
-        # nautobot-data-validation-engine==3.2.0 \
-        # nautobot-plugin-floorplan==2.4.0; \
-        # nautobot-firewall-models==2.2.0; \
-        # nautobot-chatops==3.1.1; \
+#         nautobot-ssot==3.3.0 \
+#         nautobot-ssot[all] \
+#         nautobot-bgp-models==2.3.0 \
+#         nautobot-plugin-nornir==2.1.0 \
+#         nautobot-golden-config==2.2.1 \
+#         nautobot-device-lifecycle-mgmt==2.2.0 \
+#         nautobot-device-onboarding==4.1.0 \
+#         nautobot-data-validation-engine==3.2.0 \
+#         nautobot-plugin-floorplan==2.4.0; \
 #     else \
 #         pip3 install --upgrade --no-warn-script-location \
 #         nautobot-ssot==1.6.4 \
