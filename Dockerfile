@@ -1,6 +1,6 @@
 # Define dynamic arguments
-ARG NAUTOBOT_VER
-ARG PYTHON_VER
+ARG NAUTOBOT_VER=2.1.9
+ARG PYTHON_VER=3.11
 
 # ---------------------------------
 # Stage: PreRequistics
@@ -32,17 +32,17 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 
 # Install extra nautobot packages
-RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]
-RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]
-RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]"
+RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]==${NAUTOBOT_VER}
+RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==${NAUTOBOT_VER}"
 RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
 RUN pip3 install --upgrade --no-warn-script-location nautobot-netbox-importer
 
 # Install Nautobot external authentication providers
-# RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-# RUN pip3 install --upgrade --no-warn-script-location social-auth-core[saml]
-# RUN pip3 install --upgrade --no-warn-script-location social-auth-core[azuread]
-# RUN pip3 install --upgrade --no-warn-script-location social-auth-core[google]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[saml]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[azuread]
+RUN pip3 install --upgrade --no-warn-script-location social-auth-core[google]
 
 # Install custom packages used in Jobs
 # RUN pip3 install --upgrade --no-warn-script-location napalm
@@ -54,66 +54,33 @@ RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
 RUN pip3 install --upgrade --no-warn-script-location hier-config
 RUN pip3 install --upgrade --no-warn-script-location pyntc
 RUN pip3 install --upgrade --no-warn-script-location pyats
-
+RUN pip3 install --upgrade --no-warn-script-location scrapli scrapli[ssh2]
+RUN pip3 install --upgrade --no-warn-script-location pysnmp
 
 # Install Ansible core
 RUN pip3 install --upgrade --no-warn-script-location ansible-core
 
 # Check Ansible collections
-# RUN ansible-galaxy collection install ansible.netcommon
-# RUN ansible-galaxy collection install ansible.utils
+RUN ansible-galaxy collection install ansible.netcommon
+RUN ansible-galaxy collection install ansible.utils
 
 
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
-# Use the main version for conditional operations
-# RUN if echo "$NAUTOBOT_VER" | grep -q '^1\.'; then \
-#         pip3 install --upgrade --no-warn-script-location \
-#         nautobot-ssot==1.6.4 \
-#         nautobot-ssot[all] \
-#         nautobot-bgp-models==1.0.0 \
-#         nautobot-plugin-nornir==1.0.5 \
-#         nautobot-golden-config==1.6.4 \
-#         nautobot-device-lifecycle-mgmt==1.6.1 \
-#         nautobot-device-onboarding==1.2.0 \
-#         nautobot-data-validation-engine==2.2.0 \
-#     else \
-#         pip3 install --upgrade --no-warn-script-location \
-#         nautobot-ssot==3.3.0 \
-#         nautobot-ssot[all] \
-#         nautobot-bgp-models==2.3.0 \
-#         nautobot-plugin-nornir==2.1.0 \
-#         nautobot-golden-config==2.2.1 \
-#         nautobot-device-lifecycle-mgmt==2.2.0 \
-#         nautobot-device-onboarding==4.1.0 \
-#         nautobot-data-validation-engine==3.2.0 \
-#         nautobot-plugin-floorplan==2.4.0; \
-#         nautobot-firewall-models==2.2.0; \
-#         nautobot-chatops==3.1.1; \
-#     fi
+# Copy the requirements files
 
-# RUN if [ "$NB_MAIN_VER" = "v2" ]; then \
-#         pip3 install --upgrade --no-warn-script-location \
-#         nautobot-ssot==3.3.0 \
-#         nautobot-ssot[all] \
-#         nautobot-bgp-models==2.3.0 \
-#         nautobot-plugin-nornir==2.1.0 \
-#         nautobot-golden-config==2.2.1 \
-#         nautobot-device-lifecycle-mgmt==2.2.0 \
-#         nautobot-device-onboarding==4.1.0 \
-#         nautobot-data-validation-engine==3.2.0 \
-#         nautobot-plugin-floorplan==2.4.0; \
-#     else \
-#         pip3 install --upgrade --no-warn-script-location \
-#         nautobot-ssot==1.6.4 \
-#         nautobot-ssot[all] \
-#         nautobot-bgp-models==1.0.0 \
-#         nautobot-plugin-nornir==1.0.5 \
-#         nautobot-golden-config==1.6.4 \
-#         nautobot-device-lifecycle-mgmt==1.6.1 \
-#         nautobot-device-onboarding==1.2.0 \
-#         nautobot-data-validation-engine==2.2.0 \
-#         nautobot-plugin-floorplan==1.0.0; \
-#     fi
+COPY requirements-1.x.txt requirements-2.x.txt /opt/nautobot/
+# Use the main version for conditional operations
+# Install dependencies based on the Nautobot version
+RUN pip3 install --upgrade pip --root-user-action=ignore && \
+    bash -c ' \
+    if [[ "$NAUTOBOT_VER" == 1.* ]]; then \
+        pip3 install -r /opt/nautobot/requirements-1.x.txt; \
+    elif [[ "$NAUTOBOT_VER" == 2.* ]]; then \
+        pip3 install -r /opt/nautobot/requirements-2.x.txt; \
+    else \
+        echo "Unsupported Nautobot version"; \
+        exit 1; \
+    fi'
 
 # ---------------------------------
 # Stage: Final
@@ -122,8 +89,26 @@ FROM base as final
 ARG PYTHON_VER
 USER 0
 
+# Copy installed packages from builder
 COPY --from=builder /usr/local/lib/python${PYTHON_VER}/site-packages /usr/local/lib/python${PYTHON_VER}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Cleanup
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy entry script - create config if not already present
+COPY init-config.sh /usr/local/bin/init-config.sh
+RUN chmod +x /usr/local/bin/init-config.sh
+
+# Execute python uwsgi
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN pyuwsgi --cflags | sed 's/ /\n/g' | grep -e "^-DUWSGI_SSL$"
+
+# Switch back to the Nautobot user
 USER nautobot
 
+# Set working directory
 WORKDIR /opt/nautobot
+
+# Start Nautobot
+CMD ["pyuwsgi", "--http", ":8080", "--module", "nautobot.core.wsgi", "--enable-threads", "--master", "--static-map", "/static=/opt/nautobot/static"]

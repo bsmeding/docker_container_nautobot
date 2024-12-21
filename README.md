@@ -16,6 +16,22 @@ Nautobot docker container including other networking tools
 * nautobot[napalm]
 * nautobot[sso]
 * social-auth-core[openidconnect]
+* social-auth-core[saml]
+* social-auth-core[azuread]
+* social-auth-core[google]
+
+# Install custom packages used in Jobs
+* pandas
+* xlrd
+* openpyxl
+* fuzzywuzzy
+* python-Levenshtein
+* hier-config
+* pyntc
+* pyats
+* scrapli scrapli[ssh2]
+* pysnmp
+
 
 ## Nautobot plugins
 * nornir-nautobot
@@ -29,6 +45,10 @@ Nautobot docker container including other networking tools
 * [nautobot-plugin-floorplan](https://docs.nautobot.com/projects/floor-plan/en/latest/)
 * [nautobot-firewall-models](https://docs.nautobot.com/projects/firewall-models/en/latest/)
 * [todo: chatops](https://docs.nautobot.com/projects/chatops/en/latest/)
+
+
+# Docker-compose
+To setup a working environment in Docker including database and redis, see an example of [docker-compose.yml for Nautobot here](https://gist.github.com/bsmeding/d60cf4f23519c75ca2339148d6efd7fe)
 
 # More flexibility needed?
 If you need more flexibility, please take a look at my Ansible role to deploy Nautobot on Docker![here](https://github.com/bsmeding/ansible_role_nautobot_docker) or via [Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/bsmeding/nautobot_docker/)
