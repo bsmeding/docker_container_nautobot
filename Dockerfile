@@ -1,5 +1,5 @@
 # Define dynamic arguments
-ARG NAUTOBOT_VER=2.1.9
+ARG NAUTOBOT_VER=2.3.15
 ARG PYTHON_VER=3.11
 
 # ---------------------------------
@@ -32,11 +32,15 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 
 # Install extra nautobot packages
-RUN pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location nautobot[ldap]==${NAUTOBOT_VER}
-RUN pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==${NAUTOBOT_VER}"
-RUN pip3 install --upgrade --no-warn-script-location nornir-nautobot
-RUN pip3 install --upgrade --no-warn-script-location nautobot-netbox-importer
+# Set a default version if NAUTOBOT_VER is not provided
+ARG DEFAULT_NAUTOBOT_VER=2.3.15
+RUN export NAUTOBOT_VER=${NAUTOBOT_VER:-$DEFAULT_NAUTOBOT_VER} && \
+    echo "Using Nautobot version: $NAUTOBOT_VER" && \
+    pip3 install --upgrade --no-warn-script-location nautobot[napalm]==$NAUTOBOT_VER && \
+    pip3 install --upgrade --no-warn-script-location nautobot[ldap]==$NAUTOBOT_VER && \
+    pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==$NAUTOBOT_VER" && \
+    pip3 install --upgrade --no-warn-script-location nornir-nautobot
+
 
 # Install Nautobot external authentication providers
 RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
