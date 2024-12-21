@@ -21,6 +21,9 @@ RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 # Stage: Builder
 # ---------------------------------
 FROM base as builder
+# Define ARGs
+ARG DEFAULT_NAUTOBOT_VER=2.3.15
+ARG NAUTOBOT_VER=${DEFAULT_NAUTOBOT_VER}
 
 RUN apt-get install -y gcc && \
     apt-get autoremove -y && \
@@ -33,12 +36,10 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install extra nautobot packages
 # Set a default version if NAUTOBOT_VER is not provided
-ARG DEFAULT_NAUTOBOT_VER=2.3.15
-RUN export NAUTOBOT_VER=${NAUTOBOT_VER:-$DEFAULT_NAUTOBOT_VER} && \
-    echo "Using Nautobot version: $NAUTOBOT_VER" && \
-    pip3 install --upgrade --no-warn-script-location nautobot[napalm]==$NAUTOBOT_VER && \
-    pip3 install --upgrade --no-warn-script-location nautobot[ldap]==$NAUTOBOT_VER && \
-    pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==$NAUTOBOT_VER" && \
+RUN echo "Using Nautobot version: ${NAUTOBOT_VER}" && \
+    pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER} && \
+    pip3 install --upgrade --no-warn-script-location nautobot[ldap]==${NAUTOBOT_VER} && \
+    pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==${NAUTOBOT_VER}" && \
     pip3 install --upgrade --no-warn-script-location nornir-nautobot
 
 
