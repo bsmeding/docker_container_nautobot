@@ -36,11 +36,19 @@ RUN pip3 install --upgrade pip setuptools wheel
 
 # Install extra nautobot packages
 # Set a default version if NAUTOBOT_VER is not provided
-RUN echo "Using Nautobot version: ${NAUTOBOT_VER}" && \
-    pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER} && \
-    pip3 install --upgrade --no-warn-script-location nautobot[ldap]==${NAUTOBOT_VER} && \
-    pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==${NAUTOBOT_VER}" && \
-    pip3 install --upgrade --no-warn-script-location nornir-nautobot
+RUN if [ "${NAUTOBOT_VER}" = "latest" ] || [ "${NAUTOBOT_VER}" = "stable" ]; then \
+        echo "Using unpinned Nautobot version: ${NAUTOBOT_VER}" && \
+        pip3 install --upgrade --no-warn-script-location nautobot[napalm] && \
+        pip3 install --upgrade --no-warn-script-location nautobot[ldap] && \
+        pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec nautobot[sso] && \
+        pip3 install --upgrade --no-warn-script-location nornir-nautobot; \
+    else \
+        echo "Using pinned Nautobot version: ${NAUTOBOT_VER}" && \
+        pip3 install --upgrade --no-warn-script-location nautobot[napalm]==${NAUTOBOT_VER} && \
+        pip3 install --upgrade --no-warn-script-location nautobot[ldap]==${NAUTOBOT_VER} && \
+        pip3 install --upgrade --no-warn-script-location --no-binary=lxml,xmlsec "nautobot[sso]==${NAUTOBOT_VER}" && \
+        pip3 install --upgrade --no-warn-script-location nornir-nautobot; \
+    fi
 
 
 # Install Nautobot external authentication providers
