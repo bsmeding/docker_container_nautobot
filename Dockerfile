@@ -88,7 +88,7 @@ RUN pip3 install --upgrade pip --root-user-action=ignore && \
     bash -c ' \
     if [[ "$NAUTOBOT_VER" == 1.* ]]; then \
         pip3 install -r /opt/nautobot/requirements-1.x.txt; \
-    elif [[ "$NAUTOBOT_VER" == 2.* ]]; then \
+    elif [[ "$NAUTOBOT_VER" == 2.* ]] || [[ "${NAUTOBOT_VER}" = "stable" ]] || [[ "${NAUTOBOT_VER}" = "latest" ]]; then \
         pip3 install -r /opt/nautobot/requirements-2.x.txt; \
     else \
         echo "Unsupported Nautobot version"; \
