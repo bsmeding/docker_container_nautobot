@@ -69,7 +69,7 @@ RUN pip3 install --upgrade --no-warn-script-location pyntc
 RUN pip3 install --upgrade --no-warn-script-location pyats
 RUN pip3 install --upgrade --no-warn-script-location scrapli scrapli[ssh2]
 RUN pip3 install --upgrade --no-warn-script-location pysnmp
-RUN pip3 install --upgrade --no-warn-script-location panos
+RUN pip3 install --upgrade --no-warn-script-location pan-os-python
 
 # Install Ansible core
 RUN pip3 install --upgrade --no-warn-script-location ansible-core
