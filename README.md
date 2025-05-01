@@ -31,6 +31,7 @@ Nautobot docker container including other networking tools
 * pyats
 * scrapli scrapli[ssh2]
 * pysnmp
+* panos
 
 
 ## Nautobot plugins
