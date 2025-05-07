@@ -1,7 +1,7 @@
 nautobot-plugin-nornir==1.0.5
 nautobot-device-lifecycle-mgmt==1.6.1 
 nautobot-bgp-models==1.0.0
-# nautobot-device-onboarding==1.2.0
+nautobot-device-onboarding==1.2.0
 nautobot-data-validation-engine==2.2.0
 nautobot-golden-config==1.6.4
 nautobot-ui-plugin==0.10.4
