@@ -51,28 +51,10 @@ RUN if [ "${NAUTOBOT_VER}" = "latest" ] || [ "${NAUTOBOT_VER}" = "stable" ]; the
     fi
 
 
-# Install Nautobot external authentication providers
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[openidconnect]
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[saml]
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[azuread]
-RUN pip3 install --upgrade --no-warn-script-location social-auth-core[google]
-
-# Install custom packages used in Jobs
-# RUN pip3 install --upgrade --no-warn-script-location napalm
-RUN pip3 install --upgrade --no-warn-script-location pandas
-RUN pip3 install --upgrade --no-warn-script-location xlrd
-RUN pip3 install --upgrade --no-warn-script-location openpyxl
-RUN pip3 install --upgrade --no-warn-script-location fuzzywuzzy
-RUN pip3 install --upgrade --no-warn-script-location python-Levenshtein
-RUN pip3 install --upgrade --no-warn-script-location hier-config
-RUN pip3 install --upgrade --no-warn-script-location pyntc
-RUN pip3 install --upgrade --no-warn-script-location pyats
-RUN pip3 install --upgrade --no-warn-script-location scrapli scrapli[ssh2]
-RUN pip3 install --upgrade --no-warn-script-location pysnmp
-RUN pip3 install --upgrade --no-warn-script-location pan-os-python
-
-# Install Ansible core
-RUN pip3 install --upgrade --no-warn-script-location ansible-core
+# Copy extra pip packages
+COPY requirements-extra.txt /opt/nautobot/
+RUN pip3 install --upgrade --no-warn-script-location -r /opt/nautobot/requirements-extra.txt
+    
 
 # Check Ansible collections
 RUN ansible-galaxy collection install ansible.netcommon

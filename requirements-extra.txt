@@ -1,0 +1,24 @@
+# requirements-extra.txt
+
+# Job-specific packages
+pandas
+xlrd
+openpyxl
+fuzzywuzzy
+python-Levenshtein
+hier-config
+pyntc
+pyats
+scrapli
+scrapli[ssh2]
+pysnmp
+pan-os-python
+
+# Auth providers
+social-auth-core[openidconnect]
+social-auth-core[saml]
+social-auth-core[azuread]
+social-auth-core[google]
+
+# Ansible
+ansible-core

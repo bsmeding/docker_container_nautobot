@@ -6,13 +6,15 @@
 # docker_container_nautobot
 Nautobot docker container including other networking tools
 
+Only the latest major versions for 1.x and 2 latest for 2.x will be maintained! So `currently` 1.6.x and 2.3.x and 2.4.x
+
 ## OS packages
 * net-tools 
 * iputils-ping  
 * dnsutils
 
 ## PIP Packages
-* ansible-core==2.15.11
+* ansible-core
 * nautobot[napalm]
 * nautobot[sso]
 * social-auth-core[openidconnect]
