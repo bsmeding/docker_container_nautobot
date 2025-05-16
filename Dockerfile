@@ -15,7 +15,7 @@ RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
 RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
 
 # Install network tools used by Jobs
-# RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
+RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
 
 # ---------------------------------
 # Stage: Builder
