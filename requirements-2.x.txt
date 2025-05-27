@@ -1,6 +1,6 @@
 nautobot-plugin-nornir==2.1.0
 nautobot-device-lifecycle-mgmt==2.2.0
-nautobot-ssot==3.3.0
+# nautobot-ssot==3.3.0
 nautobot-ssot[all]==3.3.0
 nautobot-bgp-models==2.3.0
 nautobot-device-onboarding==4.1.0
@@ -11,3 +11,4 @@ nautobot-firewall-models==2.2.0
 nautobot-chatops==3.1.1
 nautobot-ui-plugin==1.0.0
 nautobot-design-builder==2.1.0
+nautobot-secrets-providers[all]==3.2.0
