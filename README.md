@@ -70,7 +70,7 @@ Please use higher versions.
 | nautobot-design-builder==1.4.1         | nautobot-design-builder==2.2.0         | 
 | nautobot-secrets-providers[all]==1.4.2 | nautobot-secrets-providers[all]==3.2.0 |
 
-
+nautobot-chatops is removed because of dependency conficts with other plugins!
 
 
 
