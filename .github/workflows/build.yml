@@ -33,16 +33,16 @@ jobs:
           # - stable
           # - latest
         python_version: # Quoted to prevent truncation to 3.1
-          - "3.10"
+          # - "3.10"
           - "3.11"
         include:
           # Add default images (without py versions)
           - version: 1.6
             python_version: default
-          - version: 2.3
-            python_version: default
-          - version: 2.4
-            python_version: default
+          # - version: 2.3
+          #   python_version: default
+          # - version: 2.4
+          #   python_version: default
           # - version: stable
           #   python_version: default
           # - version: latest

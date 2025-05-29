@@ -63,7 +63,7 @@ Please use higher versions.
 | nautobot-device-onboarding==1.2.0      | nautobot-device-onboarding==4.2.5      |
 | nautobot-data-validation-engine==2.2.0 | nautobot-data-validation-engine==3.2.0 | 
 | nautobot-golden-config==1.6.4          | nautobot-golden-config==2.2.1          | 
-|                                        | nautobot-plugin-floorplan==0.7.0       | 
+|                                        | nautobot-floor-plan==2.8.1             | 
 | nautobot-firewall-models==1.2.1        | nautobot-firewall-models==2.2.2        | 
 | nautobot-chatops[all]==2.1.0           | nautobot-chatops[all]==3.1.1           | 
 | nautobot-ui-plugin==0.10.4             | nautobot-ui-plugin==1.0.0              | 
