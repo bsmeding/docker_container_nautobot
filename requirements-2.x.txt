@@ -1,4 +1,4 @@
-nautobot-plugin-nornir==3.3.1
+nautobot-plugin-nornir==2.2.1
 nautobot-device-lifecycle-mgmt==3.1.0
 nautobot-ssot[all]==3.8.1
 nautobot-bgp-models==2.3.1

@@ -6,7 +6,14 @@ nautobot-device-onboarding==1.2.0
 nautobot-data-validation-engine==2.2.0
 nautobot-golden-config==1.6.4
 nautobot-firewall-models==1.2.1
-nautobot-chatops[all]==2.1.0
+nautobot-chatops[aci]==2.1.0
+nautobot-chatops[ansible]==2.1.0
+nautobot-chatops[aristacv]==2.1.0
+nautobot-chatops[grafana]==2.1.0
+nautobot-chatops[meraki]==2.1.0
+nautobot-chatops[nso]==2.1.0
+nautobot-chatops[panorama]==2.1.0
+nautobot-chatops[slurpit]==2.1.0
 nautobot-ui-plugin==0.10.4
 nautobot-design-builder==1.4.1
 nautobot-secrets-providers[all]==1.4.2
