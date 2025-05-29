@@ -1,6 +1,6 @@
-nautobot-plugin-nornir==1.0.4
+nautobot-plugin-nornir>=1.0.0
 nautobot-device-lifecycle-mgmt==1.6.1
-nautobot-ssot[all]==1.6.5
+nautobot-ssot[all]>=1.6.0
 nautobot-bgp-models==1.0.0
 nautobot-device-onboarding==1.2.0
 nautobot-data-validation-engine==2.2.0

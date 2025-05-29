@@ -5,7 +5,7 @@ nautobot-bgp-models==2.3.1
 nautobot-device-onboarding==4.2.5
 nautobot-data-validation-engine==3.2.0
 nautobot-golden-config==2.2.1
-nautobot-plugin-floorplan==0.7.0
+nautobot-plugin-floorplan==2.8.1
 nautobot-firewall-models==2.2.2
 # nautobot-chatops[all]==3.1.1
 nautobot-ui-plugin==1.0.0
