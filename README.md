@@ -65,20 +65,14 @@ Please use higher versions.
 | nautobot-golden-config==1.6.4          | nautobot-golden-config==2.2.1          | 
 | nautobot-floor-plan==1.0.0             | nautobot-floor-plan==2.8.1             | 
 | nautobot-firewall-models==1.2.1        | nautobot-firewall-models==2.2.2        | 
-| nautobot-chatops[all]==2.1.0           | nautobot-chatops[all]==3.1.1           | 
 | nautobot-ui-plugin==0.10.4             | nautobot-ui-plugin==1.0.0              | 
 | nautobot-design-builder==1.4.1         | nautobot-design-builder==2.2.0         | 
 | nautobot-secrets-providers[all]==1.4.2 | nautobot-secrets-providers[all]==3.2.0 |
 
 
 nautobot-chatops is removed because of dependency conficts with other plugins!
+
 nautobot-ssot[all] is also removed from 1.x because of dependency conflicts
-
-
-
-
-
-
 
 
 # Docker-compose
