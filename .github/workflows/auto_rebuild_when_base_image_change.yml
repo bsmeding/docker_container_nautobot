@@ -10,7 +10,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -48,7 +48,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -86,7 +86,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -118,7 +118,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -150,7 +150,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v1.2.2
@@ -179,7 +179,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v4.1.3
+          - uses: actions/checkout@v4.2.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v1.2.2
