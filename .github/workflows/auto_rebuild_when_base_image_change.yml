@@ -14,7 +14,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:1.6.30-py3.11
               image: bsmeding/nautobot:1.6.30-py3.11
@@ -52,7 +52,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:1.6
               image: bsmeding/nautobot:1.6
@@ -90,7 +90,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:2.3
               image: bsmeding/nautobot:2.3
@@ -122,7 +122,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:2.4
               image: bsmeding/nautobot:2.4
@@ -153,7 +153,7 @@
           - uses: actions/checkout@v4.1.3
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:latest
               image: bsmeding/nautobot:latest
@@ -182,7 +182,7 @@
           - uses: actions/checkout@v4.1.3
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v1.2.1
+            uses: lucacome/docker-image-update-checker@v1.2.2
             with:
               base-image: networktocode/nautobot:stable
               image: bsmeding/nautobot:stable
