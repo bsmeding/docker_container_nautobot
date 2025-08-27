@@ -14,8 +14,8 @@ jobs:
         version:
           # - 1.6.29        # disabled 27-08-2025
           # - 1.6.30        # disabled 27-08-2025
-          - 1.6.31
-          - 1.6.32
+          # - 1.6.31
+          # - 1.6.32
           # - 2.3.10        # disabled 27-08-2025
           # - 2.3.11        # disabled 27-08-2025
           # - 2.3.12        # disabled 27-08-2025
@@ -45,6 +45,10 @@ jobs:
           - "3.11"
           - "3.12"
         include:
+          - version: 1.6.31
+            python_version: "3.11"
+          - version: 1.6.32
+            python_version: "3.11"
           - version: 1.6
             python_version: "3.11"
           - version: 2.3
