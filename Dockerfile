@@ -1,6 +1,6 @@
 # Define dynamic arguments
-ARG NAUTOBOT_VER=2.3.15
-ARG PYTHON_VER=3.11
+ARG NAUTOBOT_VER=2.4.19
+ARG PYTHON_VER=3.12
 
 # ---------------------------------
 # Stage: PreRequistics

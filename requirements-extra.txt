@@ -23,3 +23,9 @@ social-auth-core[google]
 # Ansible
 ansible-core
 aiohttp>=3.12.14 # not directly required, pinned by Snyk to avoid a vulnerability
+
+# Extra NAPALM drivers
+napalm-scr
+napalm-sros
+napalm-panos
+napalm-unifi
