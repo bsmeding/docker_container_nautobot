@@ -25,7 +25,7 @@ ansible-core
 aiohttp>=3.12.14 # not directly required, pinned by Snyk to avoid a vulnerability
 
 # Extra NAPALM drivers
-napalm-scr
+napalm-srl
 napalm-sros
 napalm-panos
 napalm-unifi
