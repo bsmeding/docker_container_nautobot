@@ -29,8 +29,7 @@ RUN set -eux; \
       libssl-dev \
       net-tools \
       iputils-ping \
-      dnsutils
-    ; \
+      dnsutils; \
     rm -rf /var/lib/apt/lists/*
 
 # Make sure we have recent packaging tools (important on py3.12)
