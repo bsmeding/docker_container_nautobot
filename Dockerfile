@@ -22,7 +22,7 @@ RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
 # ---------------------------------
 # Stage: Builder
 # ---------------------------------
-FROM base as builder
+FROM base AS builder
 # Define ARGs
 ARG DEFAULT_NAUTOBOT_VER=2.3.15
 ARG NAUTOBOT_VER=${DEFAULT_NAUTOBOT_VER}
@@ -83,7 +83,7 @@ RUN pip3 install --upgrade pip --root-user-action=ignore && \
 # ---------------------------------
 # Stage: Final
 # ---------------------------------
-FROM base as final
+FROM base AS final
 ARG PYTHON_VER
 USER 0
 
@@ -100,7 +100,15 @@ RUN chmod +x /usr/local/bin/init-config.sh
 
 # Execute python uwsgi
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN pyuwsgi --cflags | sed 's/ /\n/g' | grep -e "^-DUWSGI_SSL$"
+RUN if command -v pyuwsgi >/dev/null 2>&1; then \
+      if pyuwsgi --cflags 2>/dev/null | tr ' ' '\n' | grep -q -- '^-DUWSGI_SSL$'; then \
+        echo 'uWSGI built with SSL'; \
+      else \
+        echo 'WARNING: uWSGI not built with SSL'; \
+      fi; \
+    else \
+      echo 'WARNING: pyuwsgi not found in PATH'; \
+    fi
 
 # Switch back to the Nautobot user
 USER nautobot
