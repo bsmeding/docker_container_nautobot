@@ -13,6 +13,12 @@ jobs:
       matrix:
         include:
           # Explicitly list only what you want to build
+          - { version: "1.6.31", python_version: "3.10" }
+          - { version: "1.6.31", python_version: "3.11" }
+          - { version: "1.6.31", python_version: "3.12" }
+          - { version: "1.6.32", python_version: "3.10" }
+          - { version: "1.6.32", python_version: "3.11" }
+          - { version: "1.6.32", python_version: "3.12" }
           - { version: "2.4.17", python_version: "3.10" }
           - { version: "2.4.17", python_version: "3.11" }
           - { version: "2.4.17", python_version: "3.12" }
@@ -46,17 +52,38 @@ jobs:
 
       - name: Setup Build Info
         id: setup
+        shell: bash
         run: |
-          if [[ "${{ matrix.python_version }}" == "default" ]]; then
-            PYTHON_VER="3.12" # Default Python version
-            TAGS="bsmeding/nautobot:${{ matrix.version }}" # Default tag
+          NAUTOBOT_VER="${{ matrix.version }}"
+          PYV="${{ matrix.python_version }}"
+          if [[ "$PYV" == "default" ]]; then
+            PYTHON_VER="3.12"  # your default
+            base_tag="bsmeding/nautobot:${NAUTOBOT_VER}"
+            py_suffix=""       # no py suffix for default builds
           else
-            PYTHON_VER="${{ matrix.python_version }}"
-            TAGS="bsmeding/nautobot:${{ matrix.version }}-py${PYTHON_VER}" # Python-specific tag
+            PYTHON_VER="$PYV"
+            base_tag="bsmeding/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER}"
+            py_suffix="-py${PYTHON_VER}"
           fi
-          echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
-          echo "TAGS=$TAGS" >> $GITHUB_ENV
-          echo "NAUTOBOT_VER=${{ matrix.version }}" >> $GITHUB_ENV   
+
+          TAGS=("$base_tag")
+
+          # If NAUTOBOT_VER is a full patch like X.Y.Z, also add floating X.Y tags
+          if [[ "$NAUTOBOT_VER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+            TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+          fi
+
+          # Optional: if NAUTOBOT_VER is just "stable"/"latest", keep as-is (already covered)
+
+          # Write ENV
+          printf "PYTHON_VER=%s\n" "$PYTHON_VER" >> $GITHUB_ENV
+          printf "NAUTOBOT_VER=%s\n" "$NAUTOBOT_VER" >> $GITHUB_ENV
+
+          # Join tags with newlines for docker/build-push-action
+          printf "TAGS<<EOF\n" >> $GITHUB_ENV
+          printf "%s\n" "${TAGS[@]}" >> $GITHUB_ENV
+          printf "EOF\n" >> $GITHUB_ENV
 
       - name: Debug Info
         run: |
@@ -72,7 +99,6 @@ jobs:
           push: true
           no-cache: true
           build-args: |
-            NAUTOBOT_VER=${{ matrix.version }}
+            NAUTOBOT_VER=${{ env.NAUTOBOT_VER }}
             PYTHON_VER=${{ env.PYTHON_VER }}
-          tags: |
-            ${{ env.TAGS }}
+          tags: ${{ env.TAGS }}
