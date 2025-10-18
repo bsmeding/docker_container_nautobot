@@ -9,12 +9,12 @@ python-Levenshtein
 hier-config
 pyntc
 pyats
+pytest
+nuts
 scrapli
 scrapli[ssh2]
 pysnmp
 pan-os-python
-pytest
-nuts
 
 # Auth providers
 social-auth-core[openidconnect]
