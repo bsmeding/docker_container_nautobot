@@ -11,13 +11,30 @@ ARG BASE_TAG
 ARG PYTHON_VER
 
 USER 0
-RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev
+# Build deps for lxml/xmlsec (needed because of --no-binary=lxml,xmlsec)
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      python3-dev \
+      libxml2-dev \
+      libxslt1-dev \
+      zlib1g-dev \
+      libxmlsec1-dev \
+      libxmlsec1-openssl \
+      pkg-config \
+      libffi-dev \
+      libldap2-dev \
+      libsasl2-dev \
+      libssl-dev \
+      net-tools \
+      iputils-ping \
+      dnsutils
+    ; \
+    rm -rf /var/lib/apt/lists/*
 
-# Root install SAML dependencies # Removed llibxmlsec1-dev 17-09-23
-RUN apt-get update -y && apt-get install -y libxmlsec1-openssl pkg-config
-
-# Install network tools used by Jobs
-RUN apt-get update -y && apt-get install -y net-tools iputils-ping  dnsutils
+# Make sure we have recent packaging tools (important on py3.12)
+RUN pip3 install --upgrade pip setuptools wheel
 
 # ---------------------------------
 # Stage: Builder
