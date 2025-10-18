@@ -1,12 +1,14 @@
-# Define dynamic arguments
-ARG NAUTOBOT_VER=2.4.19
+# Accept upstream tag + python version
+ARG BASE_TAG=stable
 ARG PYTHON_VER=3.12
 
 # ---------------------------------
-# Stage: PreRequistics
+# Stage: Get upstream image
 # ---------------------------------
-FROM networktocode/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER} as base
-ARG NAUTOBOT_VER
+
+FROM networktocode/nautobot:${BASE_TAG}-py${PYTHON_VER} AS base
+ARG BASE_TAG
+ARG PYTHON_VER
 
 USER 0
 RUN apt-get update -y && apt-get install -y libldap2-dev libsasl2-dev libssl-dev

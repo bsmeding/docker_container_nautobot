@@ -1,9 +1,16 @@
-name: Build Matrix
+name: Build & Publish Nautobot
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  schedule:
+    # GitHub cron is UTC; this runs daily at 00:17 UTC (~02:17 Amsterdam during CEST)
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: build-matrix-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -12,13 +19,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Explicitly list only what you want to build
+          # ------- 1.6 patch builds (also publish "1.6" floating) -------
           - { version: "1.6.31", python_version: "3.10" }
           - { version: "1.6.31", python_version: "3.11" }
           - { version: "1.6.31", python_version: "3.12" }
           - { version: "1.6.32", python_version: "3.10" }
           - { version: "1.6.32", python_version: "3.11" }
           - { version: "1.6.32", python_version: "3.12" }
+
+          # ------- 2.4 patch builds (also publish "2.4" floating) -------
           - { version: "2.4.17", python_version: "3.10" }
           - { version: "2.4.17", python_version: "3.11" }
           - { version: "2.4.17", python_version: "3.12" }
@@ -28,12 +37,15 @@ jobs:
           - { version: "2.4.19", python_version: "3.10" }
           - { version: "2.4.19", python_version: "3.11" }
           - { version: "2.4.19", python_version: "3.12" }
-          - { version: "stable",  python_version: "default" }
-          - { version: "latest",  python_version: "default" }
+
+          # ------- Upstream tracking tags (single default Python) -------
+          - { version: "stable", python_version: "default" }
+          - { version: "latest", python_version: "default" }
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-      
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -43,62 +55,65 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Update Docker Hub description once per workflow (avoid doing it for every matrix job)
       - name: Docker Hub Description
+        if: matrix.version == 'latest' && matrix.python_version == 'default'
         uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: bsmeding/nautobot
 
-      - name: Setup Build Info
-        id: setup
+      - name: Setup Build Info (tags & args)
         shell: bash
         run: |
-          NAUTOBOT_VER="${{ matrix.version }}"
+          BASE_TAG="${{ matrix.version }}"               # e.g. stable/latest/2.4.19
           PYV="${{ matrix.python_version }}"
           if [[ "$PYV" == "default" ]]; then
-            PYTHON_VER="3.12"  # your default
-            base_tag="bsmeding/nautobot:${NAUTOBOT_VER}"
-            py_suffix=""       # no py suffix for default builds
+            PYTHON_VER="3.12"                            # Default Python for tracking tags
+            base_tag="bsmeding/nautobot:${BASE_TAG}"
+            py_suffix=""
           else
             PYTHON_VER="$PYV"
-            base_tag="bsmeding/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER}"
+            base_tag="bsmeding/nautobot:${BASE_TAG}-py${PYTHON_VER}"
             py_suffix="-py${PYTHON_VER}"
           fi
 
+          # Start with the primary tag
           TAGS=("$base_tag")
 
-          # If NAUTOBOT_VER is a full patch like X.Y.Z, also add floating X.Y tags
-          if [[ "$NAUTOBOT_VER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+          # If BASE_TAG is a full patch X.Y.Z, also add floating X.Y (and optionally X.Y-latest)
+          if [[ "$BASE_TAG" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
             TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            # If you also want "2.4-latest" style, uncomment next line:
+            # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}")
           fi
 
-          # Optional: if NAUTOBOT_VER is just "stable"/"latest", keep as-is (already covered)
-
-          # Write ENV
-          printf "PYTHON_VER=%s\n" "$PYTHON_VER" >> $GITHUB_ENV
-          printf "NAUTOBOT_VER=%s\n" "$NAUTOBOT_VER" >> $GITHUB_ENV
-
-          # Join tags with newlines for docker/build-push-action
-          printf "TAGS<<EOF\n" >> $GITHUB_ENV
-          printf "%s\n" "${TAGS[@]}" >> $GITHUB_ENV
-          printf "EOF\n" >> $GITHUB_ENV
+          {
+            echo "BASE_TAG=$BASE_TAG"
+            echo "PYTHON_VER=$PYTHON_VER"
+            echo "TAGS<<EOF"
+            printf "%s\n" "${TAGS[@]}"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Debug Info
         run: |
-          echo "Nautobot version: ${{ matrix.version }}"
-          echo "Python version: $PYTHON_VER"
-          echo "Tags: $TAGS"
-  
+          echo "Upstream base tag (BASE_TAG): ${{ env.BASE_TAG }}"
+          echo "Python version (PYTHON_VER):  ${{ env.PYTHON_VER }}"
+          echo "Will push tags:"
+          echo "${{ env.TAGS }}"
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          no-cache: true
+          pull: true          # always fetch newest upstream base (stable/latest move)
+          no-cache: true      # avoid stale layers when upstream moves
           build-args: |
-            NAUTOBOT_VER=${{ env.NAUTOBOT_VER }}
+            BASE_TAG=${{ env.BASE_TAG }}     # used in Dockerfile FROM ...:${BASE_TAG}-py${PYTHON_VER}
             PYTHON_VER=${{ env.PYTHON_VER }}
           tags: ${{ env.TAGS }}
