@@ -1,12 +1,14 @@
 # Accept upstream tag + python version
 ARG BASE_TAG=stable
 ARG PYTHON_VER=3.12
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 # ---------------------------------
 # Stage: Get upstream image
 # ---------------------------------
 
-FROM networktocode/nautobot:${BASE_TAG}-py${PYTHON_VER} AS base
+FROM --platform=$TARGETPLATFORM networktocode/nautobot:${BASE_TAG}-py${PYTHON_VER} AS base
 ARG BASE_TAG
 ARG PYTHON_VER
 
