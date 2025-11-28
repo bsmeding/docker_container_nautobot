@@ -34,7 +34,13 @@ jobs:
           - { version: "2.4.19", python_version: "3.10" }
           - { version: "2.4.19", python_version: "3.11" }
           - { version: "2.4.19", python_version: "3.12" }
-
+          # ------- 3.0 patch builds (also publish "3.0" floating) -------
+          - { version: "3.0.0", python_version: "3.10" }
+          - { version: "3.0.0", python_version: "3.11" }
+          - { version: "3.0.0", python_version: "3.12" }
+          - { version: "3.0.1", python_version: "3.10" }
+          - { version: "3.0.1", python_version: "3.11" }
+          - { version: "3.0.1", python_version: "3.12" }
           # ------- Upstream tracking tags (single default Python) -------
           - { version: "stable", python_version: "default" }
           - { version: "latest", python_version: "default" }
