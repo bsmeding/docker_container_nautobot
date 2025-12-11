@@ -20,10 +20,11 @@ jobs:
       matrix:
         include:
           # ------- 1.6 patch builds (also publish "1.6" floating) -------
-          - { version: "1.6.31", python_version: "3.10" }
+          # - { version: "1.6.31", python_version: "3.10" }
           - { version: "1.6.31", python_version: "3.11" }
-          - { version: "1.6.32", python_version: "3.10" }
+          - { version: "1.6.31", python_version: "3.12" }
           - { version: "1.6.32", python_version: "3.11" }
+          - { version: "1.6.32", python_version: "3.12" }
           # ------- 2.4 patch builds (also publish "2.4" floating) -------
           - { version: "2.4.17", python_version: "3.10" }
           - { version: "2.4.17", python_version: "3.11" }
@@ -41,6 +42,9 @@ jobs:
           - { version: "3.0.1", python_version: "3.10" }
           - { version: "3.0.1", python_version: "3.11" }
           - { version: "3.0.1", python_version: "3.12" }
+          - { version: "3.0.2", python_version: "3.10" }
+          - { version: "3.0.2", python_version: "3.11" }
+          - { version: "3.0.2", python_version: "3.12" }
           # ------- Upstream tracking tags (single default Python) -------
           - { version: "stable", python_version: "default" }
           - { version: "latest", python_version: "default" }

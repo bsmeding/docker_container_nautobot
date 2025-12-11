@@ -6,7 +6,7 @@
       workflow_dispatch:
       
     jobs:
-      check_nb_1_6_30:
+      check_nb_1_6_32:
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -16,8 +16,8 @@
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
             with:
-              base-image: networktocode/nautobot:1.6.30-py3.11
-              image: bsmeding/nautobot:1.6.30-py3.11
+              base-image: networktocode/nautobot:1.6.32-py3.11
+              image: bsmeding/nautobot:1.6.32-py3.11
     
           # only execute subsequent steps if an update is actually NEEDED.
           # unfortunately we need to add an if-condition to all steps now
@@ -40,8 +40,8 @@
               push: true
               build-args: |
                 PYTHON_VER=3.11
-                NAUTOBOT_VER=1.6.30
-              tags: bsmeding/nautobot:1.6.30
+                NAUTOBOT_VER=1.6.32
+              tags: bsmeding/nautobot:1.6.32
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
       
       check_nb_1_6_latest:
@@ -146,7 +146,8 @@
               tags: bsmeding/nautobot:2.4
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
 
-      check_nb_2_latest:
+
+      check_nb_3_0_py3_10:
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -155,8 +156,37 @@
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
             with:
-              base-image: networktocode/nautobot:latest
-              image: bsmeding/nautobot:latest
+              base-image: networktocode/nautobot:3.0-py3.10
+              image: bsmeding/nautobot:3.0-py3.10
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.18.0
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.10
+                NAUTOBOT_VER=3.0
+              tags: bsmeding/nautobot:3.0-py3.10
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
+      check_nb_3_0_py3_11:
+        runs-on: ubuntu-latest
+        steps:
+          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          - uses: actions/checkout@v5.0.0
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.0
+            with:
+              base-image: networktocode/nautobot:3.0-py3.11
+              image: bsmeding/nautobot:3.0-py3.11
           - name: Login to DockerHub
             uses: docker/login-action@v3
             with:
@@ -171,11 +201,41 @@
               push: true
               build-args: |
                 PYTHON_VER=3.11
-                NAUTOBOT_VER=latest
-              tags: bsmeding/nautobot:latest
+                NAUTOBOT_VER=3.0
+              tags: bsmeding/nautobot:3.0-py3.11
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
 
-      check_nb_2_stable:
+
+      check_nb_3_0_py3_12:
+        runs-on: ubuntu-latest
+        steps:
+          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          - uses: actions/checkout@v5.0.0
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.0
+            with:
+              base-image: networktocode/nautobot:3.0-py3.12
+              image: bsmeding/nautobot:3.0-py3.12
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.18.0
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.12
+                NAUTOBOT_VER=3.0
+              tags: bsmeding/nautobot:3.0-py3.12
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
+      check_nb_stable:
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -199,7 +259,36 @@
               file: './Dockerfile'
               push: true
               build-args: |
-                PYTHON_VER=3.11
+                PYTHON_VER=3.12
                 NAUTOBOT_VER=stable
               tags: bsmeding/nautobot:stable
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
+      check_nb_latest:
+        runs-on: ubuntu-latest
+        steps:
+          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          - uses: actions/checkout@v5.0.0
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.0
+            with:
+              base-image: networktocode/nautobot:latest
+              image: bsmeding/nautobot:latest
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.18.0
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.12
+                NAUTOBOT_VER=latest
+              tags: bsmeding/nautobot:latest
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
