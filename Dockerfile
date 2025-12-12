@@ -84,7 +84,7 @@ RUN ansible-galaxy collection install ansible.utils
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
 # Copy the requirements files
 
-COPY requirements-1.x.txt requirements-2.x.txt /opt/nautobot/
+COPY requirements-1.x.txt requirements-2.x.txt requirements-3.x.txt /opt/nautobot/
 # Use the main version for conditional operations
 # Install dependencies based on the Nautobot version
 RUN pip3 install --upgrade pip --root-user-action=ignore && \
@@ -93,6 +93,8 @@ RUN pip3 install --upgrade pip --root-user-action=ignore && \
         pip3 install -r /opt/nautobot/requirements-1.x.txt; \
     elif [[ "$NAUTOBOT_VER" == 2.* ]] || [[ "${NAUTOBOT_VER}" = "stable" ]] || [[ "${NAUTOBOT_VER}" = "latest" ]]; then \
         pip3 install -r /opt/nautobot/requirements-2.x.txt; \
+    elif [[ "$NAUTOBOT_VER" == 3.* ]]; then \
+        pip3 install -r /opt/nautobot/requirements-3.x.txt; \
     else \
         echo "Unsupported Nautobot version"; \
         exit 1; \
