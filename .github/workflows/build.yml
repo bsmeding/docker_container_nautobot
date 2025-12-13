@@ -92,10 +92,20 @@ jobs:
           # Start with the primary tag
           TAGS=("$base_tag")
 
-          # If BASE_TAG is a full patch X.Y.Z, also add floating X.Y (and optionally X.Y-latest)
+          # If BASE_TAG is a full patch X.Y.Z, determine if we should add floating X.Y tag
+          # Only add floating tag for the highest Python version to avoid overwrites
+          # Rule: Use 3.12 if present, otherwise 3.11, otherwise 3.10
           if [[ "$BASE_TAG" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
-            TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            
+            # Set floating tag for the highest Python version in the series
+            # Default: use 3.12 for most series, 3.11 for 1.6.x (which doesn't have 3.12)
+            if [[ "$PYTHON_VER" == "3.12" ]]; then
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            elif [[ "$PYTHON_VER" == "3.11" && "$minor" == "1.6" ]]; then
+              # 1.6.x series only has 3.10 and 3.11, so use 3.11 for floating tag
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            fi
             # If you also want "2.4-latest" style, uncomment next line:
             # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}")
           fi
