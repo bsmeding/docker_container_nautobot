@@ -10,7 +10,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -48,7 +48,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -86,7 +86,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -118,7 +118,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -151,7 +151,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
@@ -180,7 +180,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
@@ -210,7 +210,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
@@ -239,7 +239,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
@@ -268,7 +268,7 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v5.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.0
