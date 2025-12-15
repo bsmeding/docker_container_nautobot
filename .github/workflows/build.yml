@@ -137,4 +137,5 @@ jobs:
           build-args: |
             BASE_TAG=${{ env.BASE_TAG }}
             PYTHON_VER=${{ env.PYTHON_VER }}
+            NAUTOBOT_VER=${{ env.BASE_TAG }}
           tags: ${{ env.TAGS }}

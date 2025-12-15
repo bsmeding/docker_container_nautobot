@@ -166,10 +166,9 @@ fi
 validate_version "$NAUTOBOT_VER"
 
 # Determine image tag
+# Always include Python version suffix for clarity
 if [[ -n "$CUSTOM_TAG" ]]; then
     IMAGE_TAG="$CUSTOM_TAG"
-elif [[ "$PYTHON_VER" == "$DEFAULT_PYTHON_VER" ]]; then
-    IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}"
 else
     IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}-py${PYTHON_VER}"
 fi
