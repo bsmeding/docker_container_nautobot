@@ -12,3 +12,4 @@ nautobot-ui-plugin==0.10.4
 nautobot-design-builder==1.4.1
 nautobot-secrets-providers[all]==1.4.2
 urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
+cryptography>=46.0.5 # not directly required, pinned by Snyk to avoid a vulnerability
