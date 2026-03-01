@@ -10,11 +10,11 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:1.6.32-py3.11
               image: bsmeding/nautobot:1.6.32-py3.11
@@ -48,11 +48,11 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:1.6
               image: bsmeding/nautobot:1.6
@@ -86,11 +86,11 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:2.3
               image: bsmeding/nautobot:2.3
@@ -118,11 +118,11 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:2.4
               image: bsmeding/nautobot:2.4
@@ -151,10 +151,10 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:3.0-py3.10
               image: bsmeding/nautobot:3.0-py3.10
@@ -180,10 +180,10 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:3.0-py3.11
               image: bsmeding/nautobot:3.0-py3.11
@@ -210,10 +210,10 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:3.0-py3.12
               image: bsmeding/nautobot:3.0-py3.12
@@ -239,10 +239,10 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:stable
               image: bsmeding/nautobot:stable
@@ -268,10 +268,10 @@
         runs-on: ubuntu-latest
         steps:
           # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v5.0.0
+          - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.0
+            uses: lucacome/docker-image-update-checker@v3.0.1
             with:
               base-image: networktocode/nautobot:latest
               image: bsmeding/nautobot:latest
