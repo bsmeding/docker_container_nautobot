@@ -27,7 +27,8 @@ ansible-core
 aiohttp>=3.12.14 # not directly required, pinned by Snyk to avoid a vulnerability
 
 # Extra NAPALM drivers
-napalm-srl
+# napalm-srl  # Disabled: pins protobuf==3.20.3, conflicts with protobuf>=6.33.5 (CVE-2026-0994 fix).
+#             # Track: https://github.com/napalm-automation-community/napalm-srlinux/issues
 napalm-panos
 napalm-unifi
 requests>=2.32.4 # not directly required, pinned by Snyk to avoid a vulnerability
