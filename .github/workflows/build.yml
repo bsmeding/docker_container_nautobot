@@ -26,15 +26,36 @@ jobs:
           - { version: "1.6.32", python_version: "3.10" }
           - { version: "1.6.32", python_version: "3.11" }
           # ------- 2.4 patch builds (also publish "2.4" floating) -------
-          - { version: "2.4.17", python_version: "3.10" }
-          - { version: "2.4.17", python_version: "3.11" }
-          - { version: "2.4.17", python_version: "3.12" }
-          - { version: "2.4.18", python_version: "3.10" }
-          - { version: "2.4.18", python_version: "3.11" }
-          - { version: "2.4.18", python_version: "3.12" }
           - { version: "2.4.19", python_version: "3.10" }
           - { version: "2.4.19", python_version: "3.11" }
           - { version: "2.4.19", python_version: "3.12" }
+          - { version: "2.4.20", python_version: "3.10" }
+          - { version: "2.4.20", python_version: "3.11" }
+          - { version: "2.4.20", python_version: "3.12" }
+          - { version: "2.4.21", python_version: "3.10" }
+          - { version: "2.4.21", python_version: "3.11" }
+          - { version: "2.4.21", python_version: "3.12" }
+          - { version: "2.4.22", python_version: "3.10" }
+          - { version: "2.4.22", python_version: "3.11" }
+          - { version: "2.4.22", python_version: "3.12" }
+          - { version: "2.4.23", python_version: "3.10" }
+          - { version: "2.4.23", python_version: "3.11" }
+          - { version: "2.4.23", python_version: "3.12" }
+          - { version: "2.4.24", python_version: "3.10" }
+          - { version: "2.4.24", python_version: "3.11" }
+          - { version: "2.4.24", python_version: "3.12" }
+          - { version: "2.4.25", python_version: "3.10" }
+          - { version: "2.4.25", python_version: "3.11" }
+          - { version: "2.4.25", python_version: "3.12" }
+          - { version: "2.4.26", python_version: "3.10" }
+          - { version: "2.4.26", python_version: "3.11" }
+          - { version: "2.4.26", python_version: "3.12" }
+          - { version: "2.4.27", python_version: "3.10" }
+          - { version: "2.4.27", python_version: "3.11" }
+          - { version: "2.4.27", python_version: "3.12" }
+          - { version: "2.4.28", python_version: "3.10" }
+          - { version: "2.4.28", python_version: "3.11" }
+          - { version: "2.4.28", python_version: "3.12" }
           # ------- 3.0 patch builds (also publish "3.0" floating) -------
           - { version: "3.0.0", python_version: "3.10" }
           - { version: "3.0.0", python_version: "3.11" }
@@ -45,6 +66,24 @@ jobs:
           - { version: "3.0.2", python_version: "3.10" }
           - { version: "3.0.2", python_version: "3.11" }
           - { version: "3.0.2", python_version: "3.12" }
+          - { version: "3.0.3", python_version: "3.10" }
+          - { version: "3.0.3", python_version: "3.11" }
+          - { version: "3.0.3", python_version: "3.12" }
+          - { version: "3.0.4", python_version: "3.10" }
+          - { version: "3.0.4", python_version: "3.11" }
+          - { version: "3.0.4", python_version: "3.12" }
+          - { version: "3.0.5", python_version: "3.10" }
+          - { version: "3.0.5", python_version: "3.11" }
+          - { version: "3.0.5", python_version: "3.12" }
+          - { version: "3.0.6", python_version: "3.10" }
+          - { version: "3.0.6", python_version: "3.11" }
+          - { version: "3.0.6", python_version: "3.12" }
+          - { version: "3.0.7", python_version: "3.10" }
+          - { version: "3.0.7", python_version: "3.11" }
+          - { version: "3.0.7", python_version: "3.12" }
+          - { version: "3.0.8", python_version: "3.10" }
+          - { version: "3.0.8", python_version: "3.11" }
+          - { version: "3.0.8", python_version: "3.12" }
           # ------- Upstream tracking tags (single default Python) -------
           - { version: "stable", python_version: "default" }
           - { version: "latest", python_version: "default" }
