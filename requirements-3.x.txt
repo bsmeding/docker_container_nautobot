@@ -8,6 +8,7 @@ graphene>=3.0,<4.0
 graphql-relay>=3.2.0,<4.0
 
 # Plugins
+wingpy==1.6.0
 nautobot-plugin-nornir==3.0.0
 nautobot-device-lifecycle-mgmt==4.0.0
 nautobot-ssot[all]==4.0.0
