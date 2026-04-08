@@ -16,6 +16,14 @@ scrapli[ssh2]
 pysnmp
 pan-os-python
 
+# Network automation helpers (parsing, filtering, and protocols)
+ntc-templates
+textfsm
+ttp
+jmespath
+netutils
+ncclient
+
 # Auth providers
 social-auth-core[openidconnect]
 social-auth-core[saml]
