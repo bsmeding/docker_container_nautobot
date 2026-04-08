@@ -8,12 +8,9 @@ graphene>=3.0,<4.0
 graphql-relay>=3.2.0,<4.0
 
 # Plugins
-wingpy==1.6.0
 nautobot-plugin-nornir==3.0.0
 nautobot-device-lifecycle-mgmt==4.0.0
-# NOTE: changed from [all] because it includes slurpit-sdk==0.9.100 (httpx<0.28),
-# which conflicts with wingpy (httpx>=0.28.1). This is a workaround to avoid the conflict.  
-nautobot-ssot[aci,aristacv,bootstrap,citrix-adm,device42,dna-center,infoblox,ipfabric,meraki,nautobot-device-lifecycle-mgmt,pysnow,servicenow]==4.0.0
+nautobot-ssot[all]==4.0.0
 nautobot-bgp-models==3.0.0
 nautobot-device-onboarding==5.0.0
 nautobot-golden-config==3.0.0
