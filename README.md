@@ -56,19 +56,19 @@ Please use higher versions.
 
 | Plugins for Nautobot 1.x               | Plugins for Nautobot 2.x               | Plugins for Nautobot 3.x               |
 |----------------------------------------|----------------------------------------|----------------------------------------|
-| nautobot-plugin-nornir>=1.0.0          | nautobot-plugin-nornir==2.3.0          | nautobot-plugin-nornir==3.0.0          |
-| nautobot-device-lifecycle-mgmt==1.6.1  | nautobot-device-lifecycle-mgmt==3.2.0  | nautobot-device-lifecycle-mgmt==4.0.0  |
-|                                        | nautobot-ssot[all]==3.11.0             | nautobot-ssot[all]==4.0.0              |
-| nautobot-bgp-models==1.0.0             | nautobot-bgp-models==2.3.2             | nautobot-bgp-models==3.0.0             |
-| nautobot-device-onboarding==1.2.0      | nautobot-device-onboarding==4.4.0      | nautobot-device-onboarding==5.0.0      |
+| nautobot-plugin-nornir>=1.0.0          | nautobot-plugin-nornir==2.3.0          | nautobot-plugin-nornir==3.2.0          |
+| nautobot-device-lifecycle-mgmt==1.6.1  | nautobot-device-lifecycle-mgmt==3.2.0  | nautobot-device-lifecycle-mgmt==4.1.1  |
+|                                        | nautobot-ssot[all]==3.11.0             | nautobot-ssot[all]==4.2.2              |
+| nautobot-bgp-models==1.0.0             | nautobot-bgp-models==2.3.2             | nautobot-bgp-models==3.1.1             |
+| nautobot-device-onboarding==1.2.0      | nautobot-device-onboarding==4.4.0      | nautobot-device-onboarding==5.3.0      |
 | nautobot-data-validation-engine==2.2.0 | nautobot-data-validation-engine==3.4.0 |                                        |
-| nautobot-golden-config==1.6.4          | nautobot-golden-config==2.6.0          | nautobot-golden-config==3.0.0          |
-| nautobot-floor-plan==1.0.0             | nautobot-floor-plan==2.9.0             | nautobot-floor-plan==3.0.0             |
+| nautobot-golden-config==1.6.4          | nautobot-golden-config==2.6.0          | nautobot-golden-config==3.0.5          |
+| nautobot-floor-plan==1.0.0             | nautobot-floor-plan==2.9.0             | nautobot-floor-plan==3.0.1             |
 | nautobot-firewall-models==1.2.1        | nautobot-firewall-models==2.4.0        | nautobot-firewall-models==3.0.0        |
-|                                        |                                        | nautobot-chatops==4.0.0                |
+|                                        |                                        | nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.0 |
 | nautobot-ui-plugin==0.10.4             | nautobot-ui-plugin==1.0.0              |                                        |
 | nautobot-design-builder==1.4.1         | nautobot-design-builder==2.3.0         | nautobot-design-builder==3.0.0          |
-| nautobot-secrets-providers[all]==1.4.2 | nautobot-secrets-providers==3.2.0      | nautobot-secrets-providers==4.0.0      |
+| nautobot-secrets-providers[all]==1.4.2 | nautobot-secrets-providers==3.2.0      | nautobot-secrets-providers[all]==4.0.1 |
 
 
 **Notes:**

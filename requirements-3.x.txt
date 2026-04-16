@@ -8,17 +8,17 @@ graphene>=3.0,<4.0
 graphql-relay>=3.2.0,<4.0
 
 # Plugins
-nautobot-plugin-nornir==3.0.0
-nautobot-device-lifecycle-mgmt==4.0.0
-nautobot-ssot[all]==4.0.0
-nautobot-bgp-models==3.0.0
-nautobot-device-onboarding==5.0.0
-nautobot-golden-config==3.0.0
-nautobot-floor-plan==3.0.0
+nautobot-plugin-nornir==3.2.0
+nautobot-device-lifecycle-mgmt==4.1.1
+nautobot-ssot[all]==4.2.2
+nautobot-bgp-models==3.1.1
+nautobot-device-onboarding==5.3.0
+nautobot-golden-config==3.0.5
+nautobot-floor-plan==3.0.1
 nautobot-firewall-models==3.0.0
 # Install chatops with all integrations except grafana (grafana conflicts with diffsync requirements)
 # Individual extras: slack, teams, webex, ansible, arista (cloudvision)
 nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.0
 # nautobot-ui-plugin==1.0.0
 nautobot-design-builder==3.0.0
-nautobot-secrets-providers[all]==4.0.0
+nautobot-secrets-providers[all]==4.0.1
