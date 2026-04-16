@@ -9,7 +9,7 @@
       check_nb_1_6_32:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
@@ -47,7 +47,7 @@
       check_nb_1_6_latest:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
@@ -85,7 +85,7 @@
       check_nb_2_3:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
@@ -117,7 +117,7 @@
       check_nb_2_4:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
     
           - name: Docker Image Update Checker
@@ -150,7 +150,7 @@
       check_nb_3_0_py3_10:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -179,7 +179,7 @@
       check_nb_3_0_py3_11:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -209,7 +209,7 @@
       check_nb_3_0_py3_12:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -235,10 +235,97 @@
               tags: bsmeding/nautobot:3.0-py3.12
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
 
+      check_nb_3_1_py3_10:
+        runs-on: ubuntu-latest
+        steps:
+          
+          - uses: actions/checkout@v6.0.2
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.1
+            with:
+              base-image: networktocode/nautobot:3.1-py3.10
+              image: bsmeding/nautobot:3.1-py3.10
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.19.2
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.10
+                NAUTOBOT_VER=3.1
+              tags: bsmeding/nautobot:3.1-py3.10
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
+      check_nb_3_1_py3_11:
+        runs-on: ubuntu-latest
+        steps:
+          
+          - uses: actions/checkout@v6.0.2
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.1
+            with:
+              base-image: networktocode/nautobot:3.1-py3.11
+              image: bsmeding/nautobot:3.1-py3.11
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.19.2
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.11
+                NAUTOBOT_VER=3.1
+              tags: bsmeding/nautobot:3.1-py3.11
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
+      check_nb_3_1_py3_12:
+        runs-on: ubuntu-latest
+        steps:
+          
+          - uses: actions/checkout@v6.0.2
+          - name: Docker Image Update Checker
+            id: baseupdatecheck
+            uses: lucacome/docker-image-update-checker@v3.0.1
+            with:
+              base-image: networktocode/nautobot:3.1-py3.12
+              image: bsmeding/nautobot:3.1-py3.12
+          - name: Login to DockerHub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+          - name: Build and push Docker images latest
+            uses: docker/build-push-action@v6.19.2
+            with:
+              context: "${{ github.workspace }}"
+              file: './Dockerfile'
+              push: true
+              build-args: |
+                PYTHON_VER=3.12
+                NAUTOBOT_VER=3.1
+              tags: bsmeding/nautobot:3.1-py3.12
+            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+
       check_nb_stable:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -267,7 +354,7 @@
       check_nb_latest:
         runs-on: ubuntu-latest
         steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
