@@ -1,7 +1,9 @@
-# Nautobot Docker Installation with Ansible
+# Nautobot Docker Image
 
 ![Nautobot Logo](https://raw.githubusercontent.com/nautobot/nautobot/develop/nautobot/docs/nautobot_logo.svg)
 
+Building: ![Build](https://github.com/bsmeding/docker_container_nautobot/actions/workflows/build.yml/badge.svg)
+Pulls: ![Docker Pulls](https://img.shields.io/docker/pulls/bsmeding/nautobot) 
 
 # docker_container_nautobot
 Nautobot Docker image extended with networking tools, Ansible, job-oriented Python packages, and pinned Nautobot apps.
