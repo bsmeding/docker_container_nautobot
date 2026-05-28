@@ -22,3 +22,4 @@ nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.0
 # nautobot-ui-plugin==1.0.0
 nautobot-design-builder==3.0.0
 nautobot-secrets-providers[all]==4.0.1
+nautobot-dns-models==2.1.1
