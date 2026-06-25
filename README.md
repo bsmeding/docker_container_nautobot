@@ -12,7 +12,7 @@ Nautobot Docker image extended with networking tools, Ansible, job-oriented Pyth
 
 **Tags:** patch releases use **`x.y.z-py3.nn`** (Nautobot version plus Python), for example `3.1.0-py3.12`, `2.4.31-py3.12`, `1.6.32-py3.11`. For each minor line (e.g. **3.1**), a floating tag like **`3.1-py3.12`** is published for the newest patch on the highest Python in that series (for **1.6**, the floating tag uses **3.11** as the highest Python in the matrix). Upstream-tracking **`stable`** and **`latest`** are published **without** a `-py…` suffix (built with Python 3.12); the pre-installed **app bundle** on those tags matches the **2.x** line (see notes below)—use an explicit **`3.x.y-py3.nn`** tag when you want Nautobot 3 and its app pins.
 
-As of **May 2025**, **Python 3.9** images are discontinued. Use **3.10+** in the tag (e.g. `-py3.12`).
+As of **May 2025**, **Python 3.9** images are discontinued. Use **3.10+** or higher in the tag (e.g. `-py3.12`).
 
 ## Pull the image
 
@@ -57,26 +57,28 @@ Which apps and versions ship in an image follow the **Nautobot major** in your t
 * [nautobot-chatops](https://docs.nautobot.com/projects/chatops/en/latest/) (bundled on **3.x** only in this image; see notes)
 * [nautobot-secrets-providers](https://docs.nautobot.com/projects/secrets-providers/en/latest/)
 * [nautobot-design-builder](https://docs.nautobot.com/projects/design-builder/en/latest/)
+* [nautobot-dns-models](https://docs.nautobot.com/projects/dns-models/en/latest/) (bundled on **3.x** only in this image)
 
 | Plugins for Nautobot 1.x               | Plugins for Nautobot 2.x               | Plugins for Nautobot 3.x               |
 |----------------------------------------|----------------------------------------|----------------------------------------|
-| nautobot-plugin-nornir>=1.0.0          | nautobot-plugin-nornir==2.3.0          | nautobot-plugin-nornir==3.2.0          |
-| nautobot-device-lifecycle-mgmt==1.6.1  | nautobot-device-lifecycle-mgmt==3.2.0  | nautobot-device-lifecycle-mgmt==4.1.1  |
-|                                        | nautobot-ssot[all]==3.11.0             | nautobot-ssot[all]==4.2.2              |
+| nautobot-plugin-nornir>=1.0.0          | nautobot-plugin-nornir==2.3.0          | nautobot-plugin-nornir==3.2.1          |
+| nautobot-device-lifecycle-mgmt==1.6.1  | nautobot-device-lifecycle-mgmt==3.2.0  | nautobot-device-lifecycle-mgmt==4.2.0  |
+|                                        | nautobot-ssot[all]==3.11.0             | nautobot-ssot[all]==4.4.0              |
 | nautobot-bgp-models==1.0.0             | nautobot-bgp-models==2.3.2             | nautobot-bgp-models==3.1.1             |
 | nautobot-device-onboarding==1.2.0      | nautobot-device-onboarding==4.4.0      | nautobot-device-onboarding==5.3.0      |
 | nautobot-data-validation-engine==2.2.0 | nautobot-data-validation-engine==3.4.0 |                                        |
-| nautobot-golden-config==1.6.4          | nautobot-golden-config==2.6.0          | nautobot-golden-config==3.0.5          |
+| nautobot-golden-config==1.6.4          | nautobot-golden-config==2.6.0          | nautobot-golden-config==3.0.6          |
 | nautobot-floor-plan==1.0.0             | nautobot-floor-plan==2.9.0             | nautobot-floor-plan==3.0.1             |
-| nautobot-firewall-models==1.2.1        | nautobot-firewall-models==2.4.0        | nautobot-firewall-models==3.0.0        |
-|                                        |                                        | nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.0 |
+| nautobot-firewall-models==1.2.1        | nautobot-firewall-models==2.4.0        | nautobot-firewall-models==3.0.1        |
+|                                        |                                        | nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.1 |
 | nautobot-ui-plugin==0.10.4             | nautobot-ui-plugin==1.0.0              |                                        |
-| nautobot-design-builder==1.4.1         | nautobot-design-builder==2.3.0         | nautobot-design-builder==3.0.0          |
+| nautobot-design-builder==1.4.1         | nautobot-design-builder==2.3.0         | nautobot-design-builder==3.1.1          |
 | nautobot-secrets-providers[all]==1.4.2 | nautobot-secrets-providers[all]==3.2.0 | nautobot-secrets-providers[all]==4.0.1 |
+|                                        |                                        | nautobot-dns-models==2.1.1             |
 
 
 **Notes:**
-- `nautobot-chatops` is removed in 1.x and 2.x due to dependency conflicts with other plugins. It is installed on **3.x** as `nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.0` (Grafana extra omitted—conflicts with diffsync).
+- `nautobot-chatops` is removed in 1.x and 2.x due to dependency conflicts with other plugins. It is installed on **3.x** as `nautobot-chatops[slack,teams,webex,ansible,arista]==4.0.1` (Grafana extra omitted—conflicts with diffsync).
 - `nautobot-ssot[all]` is removed from 1.x because of dependency conflicts. Available in 2.x and 3.x.
 - `nautobot-data-validation-engine` is not available for 3.x (the published 3.4.0 line still declares compatibility only with Nautobot versions below 3.0).
 - `nautobot-ui-plugin` is not included in 3.x requirements (commented out in `requirements-3.x.txt`).

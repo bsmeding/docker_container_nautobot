@@ -67,3 +67,42 @@ The Dockerfile automatically selects the correct requirements file based on the 
 - `1.*` → uses `requirements-1.x.txt`
 - `2.*`, `stable`, `latest` → uses `requirements-2.x.txt`
 - `3.*` → uses `requirements-3.x.txt`
+
+## Dev image (local-only, for testing packages)
+
+Use a `-dev` image to try out experimental packages / version bumps **before**
+promoting them into `requirements-extra.txt` or the per-major
+`requirements-{1,2,3}.x.txt` files and the CI build matrix.
+
+It uses `Dockerfile.dev`, which simply layers [`requirements-dev.txt`](requirements-dev.txt)
+on top of an existing Nautobot image — it does **not** rebuild Nautobot, so
+iteration is fast. Dev images are never published by CI.
+
+1. Add the packages you want to test to `requirements-dev.txt`.
+2. Build a `-dev` image on top of an existing tag:
+
+```bash
+# Layer onto a locally built image -> bsmeding/nautobot:3.1.0-py3.12-dev
+./build.sh --dev 3.1.0
+
+# Layer onto a published tag without building the full image first
+./build.sh --dev -b bsmeding/nautobot:stable -t bsmeding/nautobot:stable-dev stable
+```
+
+Or with the Makefile:
+
+```bash
+make build-dev VERSION=3.1.0
+make build-dev BASE_IMAGE=bsmeding/nautobot:stable
+```
+
+3. Run and test it:
+
+```bash
+docker run -d -p 8080:8080 bsmeding/nautobot:3.1.0-py3.12-dev
+```
+
+> The base image already carries build tooling (build-essential, python3-dev,
+> etc.). If a dev package needs to compile against system libraries that aren't
+> present, add an `apt-get update && apt-get install -y ...` step to
+> `Dockerfile.dev` while you iterate.

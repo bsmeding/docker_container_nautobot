@@ -1,0 +1,19 @@
+# requirements-dev.txt
+#
+# Scratch list for trying out experimental packages / version bumps on top of an
+# already-built Nautobot image, BEFORE promoting them into requirements-extra.txt
+# or the per-major requirements-{1,2,3}.x.txt files and the CI build matrix.
+#
+# This file is ONLY used by Dockerfile.dev (build.sh --dev / make build-dev).
+# It is never installed in the published images.
+#
+# Add anything you want to test, e.g.:
+#   nautobot-some-new-app==0.1.0
+#   napalm-srl==1.0.0
+#   ipython            # handy for `nautobot-server shell_plus`-style debugging
+#   debugpy            # remote debugging
+#   django-extensions  # shell_plus, runserver_plus, etc.
+#
+# Leave it empty to just rebuild a -dev image identical to the base.
+nautobot-mcp-server
+nautobot-app-digital-twin
