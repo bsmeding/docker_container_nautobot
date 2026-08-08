@@ -41,7 +41,7 @@ jobs:
       - name: Detect recipe file changes
         id: paths
         if: github.event_name == 'push'
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             recipe:
