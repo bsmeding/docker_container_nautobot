@@ -10,7 +10,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -42,7 +42,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
@@ -75,7 +75,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -104,7 +104,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -134,7 +134,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -163,7 +163,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -192,7 +192,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -221,7 +221,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -250,7 +250,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -279,7 +279,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -308,7 +308,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -337,7 +337,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
@@ -366,7 +366,7 @@
         runs-on: ubuntu-latest
         steps:
           
-          - uses: actions/checkout@v6.0.2
+          - uses: actions/checkout@v7.0.1
           - name: Docker Image Update Checker
             id: baseupdatecheck
             uses: lucacome/docker-image-update-checker@v3.0.1
