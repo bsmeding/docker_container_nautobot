@@ -3,17 +3,78 @@ name: Build & Publish Nautobot
 on:
   push:
     branches: [ main ]
+    # Skip CI for docs-only / unrelated changes
+    paths:
+      - "Dockerfile"
+      - "Dockerfile.dev"
+      - "requirements*.txt"
+      - "init-config.sh"
+      - ".github/workflows/build.yml"
   schedule:
     # GitHub cron is UTC; this runs daily at 00:17 UTC (~02:17 Amsterdam during CEST)
+    # Schedule only rebuilds floating tags (stable/latest); pinned X.Y.Z are immutable.
     - cron: "17 0 * * *"
   workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: "Rebuild all matrix images even if the tag already exists"
+        type: boolean
+        default: false
 
 concurrency:
   group: build-matrix-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      # true when Dockerfile / requirements* / init-config change → rebuild ALL pinned tags
+      recipe_changed: ${{ steps.paths.outputs.recipe == 'true' || steps.detect.outputs.recipe_changed == 'true' }}
+      force_rebuild: ${{ steps.detect.outputs.force_rebuild }}
+    steps:
+      - name: Checkout
+        if: github.event_name == 'push'
+        uses: actions/checkout@v6
+
+      # Reliable detection: any requirements/Dockerfile/init change forces full rebuild
+      - name: Detect recipe file changes
+        id: paths
+        if: github.event_name == 'push'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            recipe:
+              - 'Dockerfile'
+              - 'Dockerfile.dev'
+              - 'requirements*.txt'
+              - 'init-config.sh'
+
+      - name: Detect rebuild policy
+        id: detect
+        shell: bash
+        env:
+          FORCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_rebuild || false }}
+          PATHS_RECIPE: ${{ steps.paths.outputs.recipe }}
+        run: |
+          set -euo pipefail
+
+          force=false
+          if [[ "$FORCE_INPUT" == "true" ]]; then
+            force=true
+          fi
+          echo "force_rebuild=$force" >> "$GITHUB_OUTPUT"
+
+          # Fallback if paths-filter did not run (non-push) or returned empty
+          recipe_changed=false
+          if [[ "${PATHS_RECIPE:-}" == "true" ]]; then
+            recipe_changed=true
+          fi
+          echo "recipe_changed=$recipe_changed" >> "$GITHUB_OUTPUT"
+          echo "force_rebuild=$force recipe_changed=$recipe_changed (paths-filter=${PATHS_RECIPE:-n/a})"
+
   build:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -164,30 +225,6 @@ jobs:
           - { version: "latest", python_version: "default" }
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Set up QEMU (enable cross-arch emulation)
-        uses: docker/setup-qemu-action@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # Update Docker Hub description once per workflow (avoid doing it for every matrix job)
-      - name: Docker Hub Description
-        if: matrix.version == 'latest' && matrix.python_version == 'default'
-        uses: peter-evans/dockerhub-description@v5
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: bsmeding/nautobot
-
       - name: Setup Build Info (tags & args)
         shell: bash
         run: |
@@ -227,26 +264,121 @@ jobs:
           {
             echo "BASE_TAG=$BASE_TAG"
             echo "PYTHON_VER=$PYTHON_VER"
+            echo "PRIMARY_TAG=$base_tag"
             echo "TAGS<<EOF"
             printf "%s\n" "${TAGS[@]}"
             echo "EOF"
           } >> "$GITHUB_ENV"
 
+      - name: Decide whether to build
+        id: should_build
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FORCE_REBUILD: ${{ needs.prepare.outputs.force_rebuild }}
+          RECIPE_CHANGED: ${{ needs.prepare.outputs.recipe_changed }}
+        run: |
+          set -euo pipefail
+
+          floating=false
+          if [[ "${{ env.BASE_TAG }}" == "stable" || "${{ env.BASE_TAG }}" == "latest" ]]; then
+            floating=true
+          fi
+
+          # Daily schedule: only refresh floating tags (pinned X.Y.Z are immutable upstream)
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            if [[ "$floating" == "true" ]]; then
+              echo "reason=schedule-floating"
+              echo "build=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "reason=schedule-skip-pinned"
+              echo "build=false" >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
+          fi
+
+          # Manual force rebuild
+          if [[ "$FORCE_REBUILD" == "true" ]]; then
+            echo "reason=force-rebuild"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Floating tags always rebuild on push/dispatch (upstream moves)
+          if [[ "$floating" == "true" ]]; then
+            echo "reason=floating-tag"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Recipe changed → rebuild all pinned versions so packages/Dockerfile updates land everywhere
+          if [[ "$RECIPE_CHANGED" == "true" ]]; then
+            echo "reason=recipe-changed"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Typical case: you only added a new upstream version → build only missing tags
+          if docker manifest inspect "${{ env.PRIMARY_TAG }}" >/dev/null 2>&1; then
+            echo "reason=tag-exists-skip (${{ env.PRIMARY_TAG }})"
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "reason=tag-missing-build (${{ env.PRIMARY_TAG }})"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Debug Info
         run: |
           echo "Upstream base tag (BASE_TAG): ${{ env.BASE_TAG }}"
           echo "Python version (PYTHON_VER):  ${{ env.PYTHON_VER }}"
+          echo "Primary tag: ${{ env.PRIMARY_TAG }}"
+          echo "Will build: ${{ steps.should_build.outputs.build }}"
           echo "Will push tags:"
           echo "${{ env.TAGS }}"
 
+      - name: Checkout
+        if: steps.should_build.outputs.build == 'true'
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - name: Set up QEMU (enable cross-arch emulation)
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/setup-qemu-action@v4
+
+      - name: Login to Docker Hub
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Update Docker Hub description once per workflow (avoid doing it for every matrix job)
+      - name: Docker Hub Description
+        if: >
+          steps.should_build.outputs.build == 'true' &&
+          matrix.version == 'latest' &&
+          matrix.python_version == 'default'
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: bsmeding/nautobot
+
       - name: Build and Push Docker Image
+        if: steps.should_build.outputs.build == 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
           push: true
-          pull: true          # always fetch newest upstream base (stable/latest move)
-          no-cache: true      # avoid stale layers when upstream moves
+          pull: true
+          # Cold cache only for moving tags; pinned X.Y.Z reuse BuildKit/GHA cache
+          no-cache: ${{ matrix.version == 'stable' || matrix.version == 'latest' }}
+          cache-from: type=gha,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}
+          cache-to: type=gha,mode=max,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             BASE_TAG=${{ env.BASE_TAG }}
