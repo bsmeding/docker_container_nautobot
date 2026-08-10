@@ -14,7 +14,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:2.3
               image: bsmeding/nautobot:2.3
@@ -46,7 +46,7 @@
     
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:2.4
               image: bsmeding/nautobot:2.4
@@ -78,7 +78,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.0-py3.10
               image: bsmeding/nautobot:3.0-py3.10
@@ -107,7 +107,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.0-py3.11
               image: bsmeding/nautobot:3.0-py3.11
@@ -137,7 +137,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.0-py3.12
               image: bsmeding/nautobot:3.0-py3.12
@@ -166,7 +166,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.1-py3.10
               image: bsmeding/nautobot:3.1-py3.10
@@ -195,7 +195,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.1-py3.11
               image: bsmeding/nautobot:3.1-py3.11
@@ -224,7 +224,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.1-py3.12
               image: bsmeding/nautobot:3.1-py3.12
@@ -253,7 +253,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.2-py3.10
               image: bsmeding/nautobot:3.2-py3.10
@@ -282,7 +282,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.2-py3.11
               image: bsmeding/nautobot:3.2-py3.11
@@ -311,7 +311,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:3.2-py3.12
               image: bsmeding/nautobot:3.2-py3.12
@@ -340,7 +340,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:stable
               image: bsmeding/nautobot:stable
@@ -369,7 +369,7 @@
           - uses: actions/checkout@v6.0.2
           - name: Docker Image Update Checker
             id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
+            uses: lucacome/docker-image-update-checker@v3.1.1
             with:
               base-image: networktocode/nautobot:latest
               image: bsmeding/nautobot:latest
