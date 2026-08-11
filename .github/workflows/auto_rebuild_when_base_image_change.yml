@@ -27,7 +27,7 @@
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
     
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -59,7 +59,7 @@
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
     
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -89,7 +89,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -118,7 +118,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -148,7 +148,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -177,7 +177,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -206,7 +206,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -235,7 +235,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -264,7 +264,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -293,7 +293,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -322,7 +322,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -351,7 +351,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
@@ -380,7 +380,7 @@
               password: ${{ secrets.DOCKERHUB_TOKEN }}
             if: steps.baseupdatecheck.outputs.needs-updating == 'true'
           - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
+            uses: docker/build-push-action@v7.3.0
             with:
               context: "${{ github.workspace }}"
               file: './Dockerfile'
