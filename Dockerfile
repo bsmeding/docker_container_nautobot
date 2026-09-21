@@ -84,21 +84,33 @@ RUN ansible-galaxy collection install ansible.utils
 RUN echo "NAUTOBOT_VER=$NAUTOBOT_VER"
 # Copy the requirements files
 
-COPY requirements-1.x.txt requirements-2.x.txt requirements-3.x.txt /opt/nautobot/
+COPY requirements-1.x.txt requirements-2.x.txt requirements-3.x.txt requirements-mcp.txt /opt/nautobot/
 # Use the main version for conditional operations
 # Install dependencies based on the Nautobot version
 RUN pip3 install --upgrade pip --root-user-action=ignore && \
     bash -c ' \
     if [[ "$NAUTOBOT_VER" == 1.* ]]; then \
         pip3 install --upgrade -r /opt/nautobot/requirements-1.x.txt; \
-    elif [[ "$NAUTOBOT_VER" == 2.* ]] || [[ "${NAUTOBOT_VER}" = "stable" ]] || [[ "${NAUTOBOT_VER}" = "latest" ]]; then \
+    elif [[ "$NAUTOBOT_VER" == 2.* ]]; then \
         pip3 install --upgrade -r /opt/nautobot/requirements-2.x.txt; \
-    elif [[ "$NAUTOBOT_VER" == 3.* ]]; then \
+    elif [[ "$NAUTOBOT_VER" == 3.* ]] || [[ "${NAUTOBOT_VER}" = "stable" ]] || [[ "${NAUTOBOT_VER}" = "latest" ]]; then \
         pip3 install --upgrade -r /opt/nautobot/requirements-3.x.txt; \
     else \
         echo "Unsupported Nautobot version"; \
         exit 1; \
     fi'
+
+# Optional published flavor (e.g. -mcp). Declare ARG immediately before use so
+# regular vs -mcp builds share the expensive layers above.
+ARG EXTRA_REQUIREMENTS=
+RUN if [ -n "${EXTRA_REQUIREMENTS}" ]; then \
+      case "${EXTRA_REQUIREMENTS}" in \
+        requirements-*.txt) ;; \
+        *) echo "Invalid EXTRA_REQUIREMENTS: ${EXTRA_REQUIREMENTS}"; exit 1 ;; \
+      esac; \
+      echo "Installing extra flavor requirements: ${EXTRA_REQUIREMENTS}"; \
+      pip3 install --upgrade --no-warn-script-location -r "/opt/nautobot/${EXTRA_REQUIREMENTS}"; \
+    fi
 
 # ---------------------------------
 # Stage: Final

@@ -15,6 +15,7 @@ packages = [
     "nautobot-ui-plugin",
     "nautobot-design-builder",
     "nautobot-secrets-providers",
+    "nautobot-dns-models",
 ]
 
 def get_latest(pkg):

@@ -65,8 +65,16 @@ docker build \
 
 The Dockerfile automatically selects the correct requirements file based on the `NAUTOBOT_VER`:
 - `1.*` → uses `requirements-1.x.txt`
-- `2.*`, `stable`, `latest` → uses `requirements-2.x.txt`
-- `3.*` → uses `requirements-3.x.txt`
+- `2.*` → uses `requirements-2.x.txt`
+- `3.*`, `stable`, `latest` → uses `requirements-3.x.txt` (stable/latest track upstream `networktocode/nautobot`)
+- Optional `EXTRA_REQUIREMENTS=requirements-mcp.txt` → also installs `requirements-mcp.txt` and is published as a `-mcp` tag
+
+```bash
+# MCP flavor (3.x bundle + nautobot-mcp)
+./build.sh --mcp 3.2.5
+./build.sh --mcp stable
+make build-mcp VERSION=latest
+```
 
 ## Dev image (local-only, for testing packages)
 

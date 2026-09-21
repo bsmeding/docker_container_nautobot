@@ -1,392 +1,103 @@
 ---
-    name: Regular base image update check
-    on:
-      schedule:
-        - cron: "23 13 3 * *"
-      workflow_dispatch:
-      
-    jobs:
-      check_nb_2_3:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-    
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:2.3
-              image: bsmeding/nautobot:2.3
-    
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-    
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.11
-                NAUTOBOT_VER=2.3
-              tags: bsmeding/nautobot:2.3
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+name: Regular base image update check
+on:
+  schedule:
+    - cron: "23 13 3 * *"
+  workflow_dispatch:
 
-      check_nb_2_4:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-    
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:2.4
-              image: bsmeding/nautobot:2.4
-    
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-    
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.11
-                NAUTOBOT_VER=2.4
-              tags: bsmeding/nautobot:2.4
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+jobs:
+  check_and_rebuild:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ------- 2.4 floating (match build.yml: -py suffix) -------
+          - { base_tag: "2.4", python_version: "3.10" }
+          - { base_tag: "2.4", python_version: "3.11" }
+          - { base_tag: "2.4", python_version: "3.12" }
+          # ------- 3.0 / 3.1 (frozen upstream, still rebuild if retagged) -------
+          - { base_tag: "3.0", python_version: "3.10" }
+          - { base_tag: "3.0", python_version: "3.11" }
+          - { base_tag: "3.0", python_version: "3.12" }
+          - { base_tag: "3.1", python_version: "3.10" }
+          - { base_tag: "3.1", python_version: "3.11" }
+          - { base_tag: "3.1", python_version: "3.12" }
+          # ------- 3.2 (current 3.x line, includes py3.13) -------
+          - { base_tag: "3.2", python_version: "3.10" }
+          - { base_tag: "3.2", python_version: "3.11" }
+          - { base_tag: "3.2", python_version: "3.12" }
+          - { base_tag: "3.2", python_version: "3.13" }
+          # ------- Upstream tracking names (published without -py suffix) -------
+          - { base_tag: "stable", python_version: "3.12", publish_tag: "stable" }
+          - { base_tag: "latest", python_version: "3.12", publish_tag: "latest" }
+          # ------- MCP flavor (same bases + requirements-mcp.txt) -------
+          - { base_tag: "stable", python_version: "3.12", publish_tag: "stable-mcp", extra_requirements: "requirements-mcp.txt" }
+          - { base_tag: "latest", python_version: "3.12", publish_tag: "latest-mcp", extra_requirements: "requirements-mcp.txt" }
+          - { base_tag: "3.2", python_version: "3.12", publish_tag: "3.2-py3.12-mcp", extra_requirements: "requirements-mcp.txt" }
 
+    steps:
+      - name: Setup image names
+        id: names
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_TAG="${{ matrix.base_tag }}"
+          PYTHON_VER="${{ matrix.python_version }}"
+          # Dockerfile FROM is always networktocode/nautobot:${BASE_TAG}-py${PYTHON_VER}
+          UPSTREAM_TAG="${BASE_TAG}-py${PYTHON_VER}"
+          if [[ -n "${{ matrix.publish_tag }}" ]]; then
+            PUBLISH_TAG="${{ matrix.publish_tag }}"
+          else
+            PUBLISH_TAG="${BASE_TAG}-py${PYTHON_VER}"
+          fi
+          {
+            echo "BASE_TAG=$BASE_TAG"
+            echo "PYTHON_VER=$PYTHON_VER"
+            echo "UPSTREAM_TAG=$UPSTREAM_TAG"
+            echo "IMAGE_TAG=bsmeding/nautobot:${PUBLISH_TAG}"
+            echo "EXTRA_REQUIREMENTS=${{ matrix.extra_requirements }}"
+          } >> "$GITHUB_OUTPUT"
 
-      check_nb_3_0_py3_10:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.0-py3.10
-              image: bsmeding/nautobot:3.0-py3.10
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.10
-                NAUTOBOT_VER=3.0
-              tags: bsmeding/nautobot:3.0-py3.10
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+      - uses: actions/checkout@v6
 
-      check_nb_3_0_py3_11:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.0-py3.11
-              image: bsmeding/nautobot:3.0-py3.11
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.11
-                NAUTOBOT_VER=3.0
-              tags: bsmeding/nautobot:3.0-py3.11
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+      - name: Docker Image Update Checker
+        id: baseupdatecheck
+        uses: lucacome/docker-image-update-checker@v3.0.1
+        with:
+          # Compare against the image the Dockerfile actually FROMs
+          base-image: networktocode/nautobot:${{ steps.names.outputs.UPSTREAM_TAG }}
+          image: ${{ steps.names.outputs.IMAGE_TAG }}
 
+      - name: Set up Docker Buildx
+        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+        uses: docker/setup-buildx-action@v4
 
-      check_nb_3_0_py3_12:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.0-py3.12
-              image: bsmeding/nautobot:3.0-py3.12
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.12
-                NAUTOBOT_VER=3.0
-              tags: bsmeding/nautobot:3.0-py3.12
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+      - name: Set up QEMU (enable cross-arch emulation)
+        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+        uses: docker/setup-qemu-action@v4
 
-      check_nb_3_1_py3_10:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.1-py3.10
-              image: bsmeding/nautobot:3.1-py3.10
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.10
-                NAUTOBOT_VER=3.1
-              tags: bsmeding/nautobot:3.1-py3.10
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+      - name: Login to DockerHub
+        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      check_nb_3_1_py3_11:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.1-py3.11
-              image: bsmeding/nautobot:3.1-py3.11
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.11
-                NAUTOBOT_VER=3.1
-              tags: bsmeding/nautobot:3.1-py3.11
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_3_1_py3_12:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.1-py3.12
-              image: bsmeding/nautobot:3.1-py3.12
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.12
-                NAUTOBOT_VER=3.1
-              tags: bsmeding/nautobot:3.1-py3.12
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_3_2_py3_10:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.2-py3.10
-              image: bsmeding/nautobot:3.2-py3.10
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.10
-                NAUTOBOT_VER=3.2
-              tags: bsmeding/nautobot:3.2-py3.10
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_3_2_py3_11:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.2-py3.11
-              image: bsmeding/nautobot:3.2-py3.11
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.11
-                NAUTOBOT_VER=3.2
-              tags: bsmeding/nautobot:3.2-py3.11
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_3_2_py3_12:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:3.2-py3.12
-              image: bsmeding/nautobot:3.2-py3.12
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.12
-                NAUTOBOT_VER=3.2
-              tags: bsmeding/nautobot:3.2-py3.12
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_stable:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:stable
-              image: bsmeding/nautobot:stable
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.12
-                NAUTOBOT_VER=stable
-              tags: bsmeding/nautobot:stable
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-
-      check_nb_latest:
-        runs-on: ubuntu-latest
-        steps:
-          
-          - uses: actions/checkout@v6.0.2
-          - name: Docker Image Update Checker
-            id: baseupdatecheck
-            uses: lucacome/docker-image-update-checker@v3.0.1
-            with:
-              base-image: networktocode/nautobot:latest
-              image: bsmeding/nautobot:latest
-          - name: Login to DockerHub
-            uses: docker/login-action@v4
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
-          - name: Build and push Docker images latest
-            uses: docker/build-push-action@v7.1.0
-            with:
-              context: "${{ github.workspace }}"
-              file: './Dockerfile'
-              push: true
-              build-args: |
-                PYTHON_VER=3.12
-                NAUTOBOT_VER=latest
-              tags: bsmeding/nautobot:latest
-            if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+      - name: Build and push Docker image
+        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          pull: true
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha,scope=autorebuild-${{ matrix.base_tag }}-py${{ matrix.python_version }}-${{ matrix.publish_tag || 'default' }}
+          cache-to: type=gha,mode=max,scope=autorebuild-${{ matrix.base_tag }}-py${{ matrix.python_version }}-${{ matrix.publish_tag || 'default' }}
+          build-args: |
+            BASE_TAG=${{ steps.names.outputs.BASE_TAG }}
+            PYTHON_VER=${{ steps.names.outputs.PYTHON_VER }}
+            NAUTOBOT_VER=${{ steps.names.outputs.BASE_TAG }}
+            EXTRA_REQUIREMENTS=${{ steps.names.outputs.EXTRA_REQUIREMENTS }}
+          tags: ${{ steps.names.outputs.IMAGE_TAG }}

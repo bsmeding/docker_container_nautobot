@@ -15,5 +15,5 @@
 #   django-extensions  # shell_plus, runserver_plus, etc.
 #
 # Leave it empty to just rebuild a -dev image identical to the base.
-nautobot-mcp-server
+nautobot-mcp
 nautobot-app-digital-twin

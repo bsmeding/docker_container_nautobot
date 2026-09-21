@@ -29,8 +29,10 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      # true when Dockerfile / requirements* / init-config change → rebuild ALL pinned tags
-      recipe_changed: ${{ steps.paths.outputs.recipe == 'true' || steps.detect.outputs.recipe_changed == 'true' }}
+      # true when Dockerfile / shared requirements / init-config change → rebuild ALL pinned tags
+      recipe_changed: ${{ steps.detect.outputs.recipe_changed }}
+      # true when only the MCP flavor file changes → rebuild *-mcp tags, not the whole matrix
+      mcp_changed: ${{ steps.detect.outputs.mcp_changed }}
       force_rebuild: ${{ steps.detect.outputs.force_rebuild }}
     steps:
       - name: Checkout
@@ -47,8 +49,13 @@ jobs:
             recipe:
               - 'Dockerfile'
               - 'Dockerfile.dev'
-              - 'requirements*.txt'
+              - 'requirements-extra.txt'
+              - 'requirements-1.x.txt'
+              - 'requirements-2.x.txt'
+              - 'requirements-3.x.txt'
               - 'init-config.sh'
+            mcp:
+              - 'requirements-mcp.txt'
 
       - name: Detect rebuild policy
         id: detect
@@ -56,6 +63,7 @@ jobs:
         env:
           FORCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_rebuild || false }}
           PATHS_RECIPE: ${{ steps.paths.outputs.recipe }}
+          PATHS_MCP: ${{ steps.paths.outputs.mcp }}
         run: |
           set -euo pipefail
 
@@ -71,7 +79,13 @@ jobs:
             recipe_changed=true
           fi
           echo "recipe_changed=$recipe_changed" >> "$GITHUB_OUTPUT"
-          echo "force_rebuild=$force recipe_changed=$recipe_changed (paths-filter=${PATHS_RECIPE:-n/a})"
+
+          mcp_changed=false
+          if [[ "${PATHS_MCP:-}" == "true" ]]; then
+            mcp_changed=true
+          fi
+          echo "mcp_changed=$mcp_changed" >> "$GITHUB_OUTPUT"
+          echo "force_rebuild=$force recipe_changed=$recipe_changed mcp_changed=$mcp_changed (paths-filter=${PATHS_RECIPE:-n/a} mcp=${PATHS_MCP:-n/a})"
 
   build:
     needs: prepare
@@ -150,6 +164,15 @@ jobs:
           - { version: "2.4.39", python_version: "3.10" }
           - { version: "2.4.39", python_version: "3.11" }
           - { version: "2.4.39", python_version: "3.12" }
+          - { version: "2.4.40", python_version: "3.10" }
+          - { version: "2.4.40", python_version: "3.11" }
+          - { version: "2.4.40", python_version: "3.12" }
+          - { version: "2.4.41", python_version: "3.10" }
+          - { version: "2.4.41", python_version: "3.11" }
+          - { version: "2.4.41", python_version: "3.12" }
+          - { version: "2.4.42", python_version: "3.10" }
+          - { version: "2.4.42", python_version: "3.11" }
+          - { version: "2.4.42", python_version: "3.12" }
           # ------- 3.0 patch builds (also publish "3.0" floating) -------
           # - { version: "3.0.0", python_version: "3.10" }
           # - { version: "3.0.0", python_version: "3.11" }
@@ -219,10 +242,26 @@ jobs:
           - { version: "3.2.1", python_version: "3.12" } 
           - { version: "3.2.2", python_version: "3.10" }
           - { version: "3.2.2", python_version: "3.11" }
-          - { version: "3.2.2", python_version: "3.12" } 
+          - { version: "3.2.2", python_version: "3.12" }
+          - { version: "3.2.3", python_version: "3.10" }
+          - { version: "3.2.3", python_version: "3.11" }
+          - { version: "3.2.3", python_version: "3.12" }
+          - { version: "3.2.3", python_version: "3.13" }
+          - { version: "3.2.4", python_version: "3.10" }
+          - { version: "3.2.4", python_version: "3.11" }
+          - { version: "3.2.4", python_version: "3.12" }
+          - { version: "3.2.4", python_version: "3.13" }
+          - { version: "3.2.5", python_version: "3.10" }
+          - { version: "3.2.5", python_version: "3.11" }
+          - { version: "3.2.5", python_version: "3.12" }
+          - { version: "3.2.5", python_version: "3.13" }
           # ------- Upstream tracking tags (single default Python) -------
           - { version: "stable", python_version: "default" }
           - { version: "latest", python_version: "default" }
+          # ------- MCP flavor (3.x bundle + nautobot-mcp). Keep 3.x patch in sync with newest 3.x row. -------
+          - { version: "3.2.5", python_version: "3.12", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
+          - { version: "stable", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
+          - { version: "latest", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
 
     steps:
       - name: Setup Build Info (tags & args)
@@ -230,13 +269,19 @@ jobs:
         run: |
           BASE_TAG="${{ matrix.version }}"
           PYV="${{ matrix.python_version }}"
+          TAG_SUFFIX="${{ matrix.tag_suffix }}"
+          FLAVOR_SUFFIX=""
+          if [[ -n "$TAG_SUFFIX" ]]; then
+            FLAVOR_SUFFIX="-${TAG_SUFFIX}"
+          fi
+
           if [[ "$PYV" == "default" ]]; then
             PYTHON_VER="3.12"
-            base_tag="bsmeding/nautobot:${BASE_TAG}"
+            base_tag="bsmeding/nautobot:${BASE_TAG}${FLAVOR_SUFFIX}"
             py_suffix=""
           else
             PYTHON_VER="$PYV"
-            base_tag="bsmeding/nautobot:${BASE_TAG}-py${PYTHON_VER}"
+            base_tag="bsmeding/nautobot:${BASE_TAG}-py${PYTHON_VER}${FLAVOR_SUFFIX}"
             py_suffix="-py${PYTHON_VER}"
           fi
 
@@ -249,22 +294,23 @@ jobs:
           if [[ "$BASE_TAG" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
             
-            # Set floating tag for the highest Python version in the series
-            # Default: use 3.12 for most series, 3.11 for 1.6.x (which doesn't have 3.12)
-            if [[ "$PYTHON_VER" == "3.12" ]]; then
-              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            # Floating X.Y-pyZ tag: 3.12 for most series, 3.13 for 3.2+, 3.11 for 1.6.x
+            if [[ "$PYTHON_VER" == "3.12" || "$PYTHON_VER" == "3.13" ]]; then
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}${FLAVOR_SUFFIX}")
             elif [[ "$PYTHON_VER" == "3.11" && "$minor" == "1.6" ]]; then
               # 1.6.x series only has 3.10 and 3.11, so use 3.11 for floating tag
-              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}${FLAVOR_SUFFIX}")
             fi
             # If you also want "2.4-latest" style, uncomment next line:
-            # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}")
+            # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}${FLAVOR_SUFFIX}")
           fi
 
           {
             echo "BASE_TAG=$BASE_TAG"
             echo "PYTHON_VER=$PYTHON_VER"
             echo "PRIMARY_TAG=$base_tag"
+            echo "FLAVOR_SUFFIX=$FLAVOR_SUFFIX"
+            echo "EXTRA_REQUIREMENTS=${{ matrix.extra_requirements }}"
             echo "TAGS<<EOF"
             printf "%s\n" "${TAGS[@]}"
             echo "EOF"
@@ -277,12 +323,19 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           FORCE_REBUILD: ${{ needs.prepare.outputs.force_rebuild }}
           RECIPE_CHANGED: ${{ needs.prepare.outputs.recipe_changed }}
+          MCP_CHANGED: ${{ needs.prepare.outputs.mcp_changed }}
+          TAG_SUFFIX: ${{ matrix.tag_suffix }}
         run: |
           set -euo pipefail
 
           floating=false
           if [[ "${{ env.BASE_TAG }}" == "stable" || "${{ env.BASE_TAG }}" == "latest" ]]; then
             floating=true
+          fi
+
+          is_mcp=false
+          if [[ "${TAG_SUFFIX}" == "mcp" ]]; then
+            is_mcp=true
           fi
 
           # Daily schedule: only refresh floating tags (pinned X.Y.Z are immutable upstream)
@@ -318,6 +371,13 @@ jobs:
             exit 0
           fi
 
+          # MCP flavor file only → rebuild *-mcp tags, leave regular images alone
+          if [[ "$is_mcp" == "true" && "$MCP_CHANGED" == "true" ]]; then
+            echo "reason=mcp-requirements-changed"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           # Typical case: you only added a new upstream version → build only missing tags
           if docker manifest inspect "${{ env.PRIMARY_TAG }}" >/dev/null 2>&1; then
             echo "reason=tag-exists-skip (${{ env.PRIMARY_TAG }})"
@@ -331,6 +391,8 @@ jobs:
         run: |
           echo "Upstream base tag (BASE_TAG): ${{ env.BASE_TAG }}"
           echo "Python version (PYTHON_VER):  ${{ env.PYTHON_VER }}"
+          echo "Flavor suffix: ${{ env.FLAVOR_SUFFIX }}"
+          echo "Extra requirements: ${{ env.EXTRA_REQUIREMENTS }}"
           echo "Primary tag: ${{ env.PRIMARY_TAG }}"
           echo "Will build: ${{ steps.should_build.outputs.build }}"
           echo "Will push tags:"
@@ -360,7 +422,8 @@ jobs:
         if: >
           steps.should_build.outputs.build == 'true' &&
           matrix.version == 'latest' &&
-          matrix.python_version == 'default'
+          matrix.python_version == 'default' &&
+          !matrix.tag_suffix
         uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -377,11 +440,12 @@ jobs:
           pull: true
           # Cold cache only for moving tags; pinned X.Y.Z reuse BuildKit/GHA cache
           no-cache: ${{ matrix.version == 'stable' || matrix.version == 'latest' }}
-          cache-from: type=gha,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}
-          cache-to: type=gha,mode=max,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}
+          cache-from: type=gha,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}${{ env.FLAVOR_SUFFIX }}
+          cache-to: type=gha,mode=max,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}${{ env.FLAVOR_SUFFIX }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             BASE_TAG=${{ env.BASE_TAG }}
             PYTHON_VER=${{ env.PYTHON_VER }}
             NAUTOBOT_VER=${{ env.BASE_TAG }}
+            EXTRA_REQUIREMENTS=${{ env.EXTRA_REQUIREMENTS }}
           tags: ${{ env.TAGS }}
