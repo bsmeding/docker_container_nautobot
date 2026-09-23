@@ -59,7 +59,7 @@ jobs:
             echo "EXTRA_REQUIREMENTS=${{ matrix.extra_requirements }}"
           } >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Docker Image Update Checker
         id: baseupdatecheck
