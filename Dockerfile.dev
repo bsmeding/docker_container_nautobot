@@ -1,0 +1,31 @@
+# Dockerfile.dev
+#
+# Lightweight, LOCAL-ONLY image for testing experimental packages on top of an
+# existing Nautobot image. It does NOT rebuild Nautobot from scratch; it simply
+# layers requirements-dev.txt onto a base image so iteration is fast.
+#
+# BASE_IMAGE can be:
+#   - a locally built image:  bsmeding/nautobot:3.1.0-py3.12
+#   - a published image:      bsmeding/nautobot:stable
+#
+# Build via:  ./build.sh --dev 3.1.0      (see build.sh / Makefile)
+
+ARG BASE_IMAGE=bsmeding/nautobot:stable
+
+FROM ${BASE_IMAGE} AS dev
+
+# Need root to install packages; the base image already carries build tooling
+# (build-essential, python3-dev, etc.) from its "base" stage.
+USER 0
+
+COPY requirements-dev.txt /opt/nautobot/requirements-dev.txt
+
+# Refresh apt lists only if a dev package needs to compile against system libs.
+# Most pure-Python experiments install fine without it.
+RUN pip3 install --upgrade --no-warn-script-location -r /opt/nautobot/requirements-dev.txt
+
+# Drop back to the unprivileged Nautobot user, matching the production image.
+USER nautobot
+WORKDIR /opt/nautobot
+
+CMD ["pyuwsgi", "--http", ":8080", "--module", "nautobot.core.wsgi", "--enable-threads", "--master", "--static-map", "/static=/opt/nautobot/static"]

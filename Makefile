@@ -1,4 +1,4 @@
-.PHONY: help build list build-1x build-2x build-3x
+.PHONY: help build list build-1x build-2x build-3x build-dev build-mcp
 
 # Default values
 REGISTRY ?= bsmeding
@@ -17,6 +17,10 @@ help: ## Show this help message
 	@echo "  make build VERSION=3.0.2"
 	@echo "  make build-3x VERSION=3.0.2 PYTHON_VER=3.11"
 	@echo "  make build-2x VERSION=2.4.19"
+	@echo "  make build-dev VERSION=3.0.2          # local -dev image with requirements-dev.txt"
+	@echo "  make build-dev BASE_IMAGE=bsmeding/nautobot:stable"
+	@echo "  make build-mcp VERSION=3.2.5         # -mcp image with nautobot-mcp"
+	@echo "  make build-mcp VERSION=stable"
 	@echo "  make list"
 
 list: ## List available versions
@@ -49,6 +53,29 @@ build-3x: ## Build Nautobot 3.x image (required: VERSION=3.x.x)
 		exit 1; \
 	fi
 	@./build.sh -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
+
+build-dev: ## Build local -dev image layering requirements-dev.txt (VERSION=x.y.z or BASE_IMAGE=...)
+	@if [ -z "$(VERSION)" ] && [ -z "$(BASE_IMAGE)" ]; then \
+		echo "Error: provide VERSION or BASE_IMAGE. Examples:"; \
+		echo "  make build-dev VERSION=3.0.2"; \
+		echo "  make build-dev BASE_IMAGE=bsmeding/nautobot:stable"; \
+		exit 1; \
+	fi
+	@./build.sh --dev -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
+		$(if $(BASE_IMAGE),-b $(BASE_IMAGE),) \
+		$(if $(TAG),-t $(TAG),) \
+		$(VERSION)
+
+build-mcp: ## Build -mcp image (3.x bundle + nautobot-mcp). VERSION=x.y.z|stable|latest
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is required. Examples:"; \
+		echo "  make build-mcp VERSION=3.2.5"; \
+		echo "  make build-mcp VERSION=stable"; \
+		exit 1; \
+	fi
+	@./build.sh --mcp -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
+		$(if $(TAG),-t $(TAG),) \
+		$(VERSION)
 
 build-all-3x: ## Build all 3.x versions
 	@echo "Building all Nautobot 3.x versions..."

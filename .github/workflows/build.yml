@@ -3,17 +3,92 @@ name: Build & Publish Nautobot
 on:
   push:
     branches: [ main ]
+    # Skip CI for docs-only / unrelated changes
+    paths:
+      - "Dockerfile"
+      - "Dockerfile.dev"
+      - "requirements*.txt"
+      - "init-config.sh"
+      - ".github/workflows/build.yml"
   schedule:
     # GitHub cron is UTC; this runs daily at 00:17 UTC (~02:17 Amsterdam during CEST)
+    # Schedule only rebuilds floating tags (stable/latest); pinned X.Y.Z are immutable.
     - cron: "17 0 * * *"
   workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: "Rebuild all matrix images even if the tag already exists"
+        type: boolean
+        default: false
 
 concurrency:
   group: build-matrix-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      # true when Dockerfile / shared requirements / init-config change → rebuild ALL pinned tags
+      recipe_changed: ${{ steps.detect.outputs.recipe_changed }}
+      # true when only the MCP flavor file changes → rebuild *-mcp tags, not the whole matrix
+      mcp_changed: ${{ steps.detect.outputs.mcp_changed }}
+      force_rebuild: ${{ steps.detect.outputs.force_rebuild }}
+    steps:
+      - name: Checkout
+        if: github.event_name == 'push'
+        uses: actions/checkout@v6
+
+      # Reliable detection: any requirements/Dockerfile/init change forces full rebuild
+      - name: Detect recipe file changes
+        id: paths
+        if: github.event_name == 'push'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            recipe:
+              - 'Dockerfile'
+              - 'Dockerfile.dev'
+              - 'requirements-extra.txt'
+              - 'requirements-1.x.txt'
+              - 'requirements-2.x.txt'
+              - 'requirements-3.x.txt'
+              - 'init-config.sh'
+            mcp:
+              - 'requirements-mcp.txt'
+
+      - name: Detect rebuild policy
+        id: detect
+        shell: bash
+        env:
+          FORCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_rebuild || false }}
+          PATHS_RECIPE: ${{ steps.paths.outputs.recipe }}
+          PATHS_MCP: ${{ steps.paths.outputs.mcp }}
+        run: |
+          set -euo pipefail
+
+          force=false
+          if [[ "$FORCE_INPUT" == "true" ]]; then
+            force=true
+          fi
+          echo "force_rebuild=$force" >> "$GITHUB_OUTPUT"
+
+          # Fallback if paths-filter did not run (non-push) or returned empty
+          recipe_changed=false
+          if [[ "${PATHS_RECIPE:-}" == "true" ]]; then
+            recipe_changed=true
+          fi
+          echo "recipe_changed=$recipe_changed" >> "$GITHUB_OUTPUT"
+
+          mcp_changed=false
+          if [[ "${PATHS_MCP:-}" == "true" ]]; then
+            mcp_changed=true
+          fi
+          echo "mcp_changed=$mcp_changed" >> "$GITHUB_OUTPUT"
+          echo "force_rebuild=$force recipe_changed=$recipe_changed mcp_changed=$mcp_changed (paths-filter=${PATHS_RECIPE:-n/a} mcp=${PATHS_MCP:-n/a})"
+
   build:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -21,122 +96,192 @@ jobs:
         include:
           # ------- 1.6 patch builds (also publish "1.6" floating) -------
           # - { version: "1.6.31", python_version: "3.10" }
-          - { version: "1.6.31", python_version: "3.10" }
-          - { version: "1.6.31", python_version: "3.11" }
-          - { version: "1.6.32", python_version: "3.10" }
-          - { version: "1.6.32", python_version: "3.11" }
+          # - { version: "1.6.31", python_version: "3.10" }
+          # - { version: "1.6.31", python_version: "3.11" }
+          # - { version: "1.6.32", python_version: "3.10" }
+          # - { version: "1.6.32", python_version: "3.11" }
           # ------- 2.4 patch builds (also publish "2.4" floating) -------
-          - { version: "2.4.19", python_version: "3.10" }
-          - { version: "2.4.19", python_version: "3.11" }
-          - { version: "2.4.19", python_version: "3.12" }
-          - { version: "2.4.20", python_version: "3.10" }
-          - { version: "2.4.20", python_version: "3.11" }
-          - { version: "2.4.20", python_version: "3.12" }
-          - { version: "2.4.21", python_version: "3.10" }
-          - { version: "2.4.21", python_version: "3.11" }
-          - { version: "2.4.21", python_version: "3.12" }
-          - { version: "2.4.22", python_version: "3.10" }
-          - { version: "2.4.22", python_version: "3.11" }
-          - { version: "2.4.22", python_version: "3.12" }
-          - { version: "2.4.23", python_version: "3.10" }
-          - { version: "2.4.23", python_version: "3.11" }
-          - { version: "2.4.23", python_version: "3.12" }
-          - { version: "2.4.24", python_version: "3.10" }
-          - { version: "2.4.24", python_version: "3.11" }
-          - { version: "2.4.24", python_version: "3.12" }
-          - { version: "2.4.25", python_version: "3.10" }
-          - { version: "2.4.25", python_version: "3.11" }
-          - { version: "2.4.25", python_version: "3.12" }
-          - { version: "2.4.26", python_version: "3.10" }
-          - { version: "2.4.26", python_version: "3.11" }
-          - { version: "2.4.26", python_version: "3.12" }
-          - { version: "2.4.27", python_version: "3.10" }
-          - { version: "2.4.27", python_version: "3.11" }
-          - { version: "2.4.27", python_version: "3.12" }
-          - { version: "2.4.28", python_version: "3.10" }
-          - { version: "2.4.28", python_version: "3.11" }
-          - { version: "2.4.28", python_version: "3.12" }
-          - { version: "2.4.29", python_version: "3.10" }
-          - { version: "2.4.29", python_version: "3.11" }
-          - { version: "2.4.29", python_version: "3.12" }
-          - { version: "2.4.30", python_version: "3.10" }
-          - { version: "2.4.30", python_version: "3.11" }
-          - { version: "2.4.30", python_version: "3.12" }
+          # - { version: "2.4.19", python_version: "3.10" }
+          # - { version: "2.4.19", python_version: "3.11" }
+          # - { version: "2.4.19", python_version: "3.12" }
+          # - { version: "2.4.20", python_version: "3.10" }
+          # - { version: "2.4.20", python_version: "3.11" }
+          # - { version: "2.4.20", python_version: "3.12" }
+          # - { version: "2.4.21", python_version: "3.10" }
+          # - { version: "2.4.21", python_version: "3.11" }
+          # - { version: "2.4.21", python_version: "3.12" }
+          # - { version: "2.4.22", python_version: "3.10" }
+          # - { version: "2.4.22", python_version: "3.11" }
+          # - { version: "2.4.22", python_version: "3.12" }
+          # - { version: "2.4.23", python_version: "3.10" }
+          # - { version: "2.4.23", python_version: "3.11" }
+          # - { version: "2.4.23", python_version: "3.12" }
+          # - { version: "2.4.24", python_version: "3.10" }
+          # - { version: "2.4.24", python_version: "3.11" }
+          # - { version: "2.4.24", python_version: "3.12" }
+          # - { version: "2.4.25", python_version: "3.10" }
+          # - { version: "2.4.25", python_version: "3.11" }
+          # - { version: "2.4.25", python_version: "3.12" }
+          # - { version: "2.4.26", python_version: "3.10" }
+          # - { version: "2.4.26", python_version: "3.11" }
+          # - { version: "2.4.26", python_version: "3.12" }
+          # - { version: "2.4.27", python_version: "3.10" }
+          # - { version: "2.4.27", python_version: "3.11" }
+          # - { version: "2.4.27", python_version: "3.12" }
+          # - { version: "2.4.28", python_version: "3.10" }
+          # - { version: "2.4.28", python_version: "3.11" }
+          # - { version: "2.4.28", python_version: "3.12" }
+          # - { version: "2.4.29", python_version: "3.10" }
+          # - { version: "2.4.29", python_version: "3.11" }
+          # - { version: "2.4.29", python_version: "3.12" }
+          # - { version: "2.4.30", python_version: "3.10" }
+          # - { version: "2.4.30", python_version: "3.11" }
+          # - { version: "2.4.30", python_version: "3.12" }
+          # - { version: "2.4.31", python_version: "3.10" }
+          # - { version: "2.4.31", python_version: "3.11" }
+          # - { version: "2.4.31", python_version: "3.12" }
+          # - { version: "2.4.32", python_version: "3.10" } 
+          # - { version: "2.4.32", python_version: "3.11" }
+          # - { version: "2.4.32", python_version: "3.12" }
+          - { version: "2.4.33", python_version: "3.10" }
+          - { version: "2.4.33", python_version: "3.11" }
+          - { version: "2.4.33", python_version: "3.12" }
+          - { version: "2.4.34", python_version: "3.10" }
+          - { version: "2.4.34", python_version: "3.11" }
+          - { version: "2.4.34", python_version: "3.12" }
+          - { version: "2.4.35", python_version: "3.10" }
+          - { version: "2.4.35", python_version: "3.11" }
+          - { version: "2.4.35", python_version: "3.12" }
+          - { version: "2.4.36", python_version: "3.10" }
+          - { version: "2.4.36", python_version: "3.11" }
+          - { version: "2.4.36", python_version: "3.12" }
+          - { version: "2.4.37", python_version: "3.10" }
+          - { version: "2.4.37", python_version: "3.11" }
+          - { version: "2.4.37", python_version: "3.12" }
+          - { version: "2.4.38", python_version: "3.10" }
+          - { version: "2.4.38", python_version: "3.11" }
+          - { version: "2.4.38", python_version: "3.12" }
+          - { version: "2.4.39", python_version: "3.10" }
+          - { version: "2.4.39", python_version: "3.11" }
+          - { version: "2.4.39", python_version: "3.12" }
+          - { version: "2.4.40", python_version: "3.10" }
+          - { version: "2.4.40", python_version: "3.11" }
+          - { version: "2.4.40", python_version: "3.12" }
+          - { version: "2.4.41", python_version: "3.10" }
+          - { version: "2.4.41", python_version: "3.11" }
+          - { version: "2.4.41", python_version: "3.12" }
+          - { version: "2.4.42", python_version: "3.10" }
+          - { version: "2.4.42", python_version: "3.11" }
+          - { version: "2.4.42", python_version: "3.12" }
           # ------- 3.0 patch builds (also publish "3.0" floating) -------
-          - { version: "3.0.0", python_version: "3.10" }
-          - { version: "3.0.0", python_version: "3.11" }
-          - { version: "3.0.0", python_version: "3.12" }
-          - { version: "3.0.1", python_version: "3.10" }
-          - { version: "3.0.1", python_version: "3.11" }
-          - { version: "3.0.1", python_version: "3.12" }
-          - { version: "3.0.2", python_version: "3.10" }
-          - { version: "3.0.2", python_version: "3.11" }
-          - { version: "3.0.2", python_version: "3.12" }
-          - { version: "3.0.3", python_version: "3.10" }
-          - { version: "3.0.3", python_version: "3.11" }
-          - { version: "3.0.3", python_version: "3.12" }
-          - { version: "3.0.4", python_version: "3.10" }
-          - { version: "3.0.4", python_version: "3.11" }
-          - { version: "3.0.4", python_version: "3.12" }
-          - { version: "3.0.5", python_version: "3.10" }
-          - { version: "3.0.5", python_version: "3.11" }
-          - { version: "3.0.5", python_version: "3.12" }
-          - { version: "3.0.6", python_version: "3.10" }
-          - { version: "3.0.6", python_version: "3.11" }
-          - { version: "3.0.6", python_version: "3.12" }
-          - { version: "3.0.7", python_version: "3.10" }
-          - { version: "3.0.7", python_version: "3.11" }
-          - { version: "3.0.7", python_version: "3.12" }
-          - { version: "3.0.8", python_version: "3.10" }
-          - { version: "3.0.8", python_version: "3.11" }
-          - { version: "3.0.8", python_version: "3.12" }
-          - { version: "3.0.9", python_version: "3.10" }
-          - { version: "3.0.9", python_version: "3.11" }
-          - { version: "3.0.9", python_version: "3.12" }
-          - { version: "3.0.10", python_version: "3.10" }
-          - { version: "3.0.10", python_version: "3.11" }
-          - { version: "3.0.10", python_version: "3.12" }
+          # - { version: "3.0.0", python_version: "3.10" }
+          # - { version: "3.0.0", python_version: "3.11" }
+          # - { version: "3.0.0", python_version: "3.12" }
+          # - { version: "3.0.1", python_version: "3.10" }
+          # - { version: "3.0.1", python_version: "3.11" }
+          # - { version: "3.0.1", python_version: "3.12" }
+          # - { version: "3.0.2", python_version: "3.10" }
+          # - { version: "3.0.2", python_version: "3.11" }
+          # - { version: "3.0.2", python_version: "3.12" }
+          # - { version: "3.0.3", python_version: "3.10" }
+          # - { version: "3.0.3", python_version: "3.11" }
+          # - { version: "3.0.3", python_version: "3.12" }
+          # - { version: "3.0.4", python_version: "3.10" }
+          # - { version: "3.0.4", python_version: "3.11" }
+          # - { version: "3.0.4", python_version: "3.12" }
+          # - { version: "3.0.5", python_version: "3.10" }
+          # - { version: "3.0.5", python_version: "3.11" }
+          # - { version: "3.0.5", python_version: "3.12" }
+          # - { version: "3.0.6", python_version: "3.10" }
+          # - { version: "3.0.6", python_version: "3.11" }
+          # - { version: "3.0.6", python_version: "3.12" }
+          # - { version: "3.0.7", python_version: "3.10" }
+          # - { version: "3.0.7", python_version: "3.11" }
+          # - { version: "3.0.7", python_version: "3.12" }
+          # - { version: "3.0.8", python_version: "3.10" }
+          # - { version: "3.0.8", python_version: "3.11" }
+          # - { version: "3.0.8", python_version: "3.12" }
+          # - { version: "3.0.9", python_version: "3.10" }
+          # - { version: "3.0.9", python_version: "3.11" }
+          # - { version: "3.0.9", python_version: "3.12" }
+          # - { version: "3.0.10", python_version: "3.10" }
+          # - { version: "3.0.10", python_version: "3.11" }
+          # - { version: "3.0.10", python_version: "3.12" }
+          - { version: "3.1.0", python_version: "3.10" }
+          - { version: "3.1.0", python_version: "3.11" }
+          - { version: "3.1.0", python_version: "3.12" }
+          - { version: "3.1.1", python_version: "3.10" }
+          - { version: "3.1.1", python_version: "3.11" }
+          - { version: "3.1.1", python_version: "3.12" }
+          - { version: "3.1.2", python_version: "3.10" }
+          - { version: "3.1.2", python_version: "3.11" }
+          - { version: "3.1.2", python_version: "3.12" }
+          - { version: "3.1.3", python_version: "3.10" }
+          - { version: "3.1.3", python_version: "3.11" }
+          - { version: "3.1.3", python_version: "3.12" }
+          - { version: "3.1.4", python_version: "3.10" }
+          - { version: "3.1.4", python_version: "3.11" }
+          - { version: "3.1.4", python_version: "3.12" }  
+          - { version: "3.1.5", python_version: "3.10" }
+          - { version: "3.1.5", python_version: "3.11" }
+          - { version: "3.1.5", python_version: "3.12" }  
+          - { version: "3.1.6", python_version: "3.10" }
+          - { version: "3.1.6", python_version: "3.11" }
+          - { version: "3.1.6", python_version: "3.12" }  
+          - { version: "3.1.7", python_version: "3.10" }
+          - { version: "3.1.7", python_version: "3.11" }
+          - { version: "3.1.7", python_version: "3.12" }  
+          - { version: "3.1.8", python_version: "3.10" }
+          - { version: "3.1.8", python_version: "3.11" }
+          - { version: "3.1.8", python_version: "3.12" } 
+          - { version: "3.2.0", python_version: "3.10" }
+          - { version: "3.2.0", python_version: "3.11" }
+          - { version: "3.2.0", python_version: "3.12" } 
+          - { version: "3.2.1", python_version: "3.10" }
+          - { version: "3.2.1", python_version: "3.11" }
+          - { version: "3.2.1", python_version: "3.12" } 
+          - { version: "3.2.2", python_version: "3.10" }
+          - { version: "3.2.2", python_version: "3.11" }
+          - { version: "3.2.2", python_version: "3.12" }
+          - { version: "3.2.3", python_version: "3.10" }
+          - { version: "3.2.3", python_version: "3.11" }
+          - { version: "3.2.3", python_version: "3.12" }
+          - { version: "3.2.3", python_version: "3.13" }
+          - { version: "3.2.4", python_version: "3.10" }
+          - { version: "3.2.4", python_version: "3.11" }
+          - { version: "3.2.4", python_version: "3.12" }
+          - { version: "3.2.4", python_version: "3.13" }
+          - { version: "3.2.5", python_version: "3.10" }
+          - { version: "3.2.5", python_version: "3.11" }
+          - { version: "3.2.5", python_version: "3.12" }
+          - { version: "3.2.5", python_version: "3.13" }
           # ------- Upstream tracking tags (single default Python) -------
           - { version: "stable", python_version: "default" }
           - { version: "latest", python_version: "default" }
+          # ------- MCP flavor (3.x bundle + nautobot-mcp). Keep 3.x patch in sync with newest 3.x row. -------
+          - { version: "3.2.5", python_version: "3.12", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
+          - { version: "stable", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
+          - { version: "latest", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up QEMU (enable cross-arch emulation)
-        uses: docker/setup-qemu-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # Update Docker Hub description once per workflow (avoid doing it for every matrix job)
-      - name: Docker Hub Description
-        if: matrix.version == 'latest' && matrix.python_version == 'default'
-        uses: peter-evans/dockerhub-description@v5
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: bsmeding/nautobot
-
       - name: Setup Build Info (tags & args)
         shell: bash
         run: |
           BASE_TAG="${{ matrix.version }}"
           PYV="${{ matrix.python_version }}"
+          TAG_SUFFIX="${{ matrix.tag_suffix }}"
+          FLAVOR_SUFFIX=""
+          if [[ -n "$TAG_SUFFIX" ]]; then
+            FLAVOR_SUFFIX="-${TAG_SUFFIX}"
+          fi
+
           if [[ "$PYV" == "default" ]]; then
             PYTHON_VER="3.12"
-            base_tag="bsmeding/nautobot:${BASE_TAG}"
+            base_tag="bsmeding/nautobot:${BASE_TAG}${FLAVOR_SUFFIX}"
             py_suffix=""
           else
             PYTHON_VER="$PYV"
-            base_tag="bsmeding/nautobot:${BASE_TAG}-py${PYTHON_VER}"
+            base_tag="bsmeding/nautobot:${BASE_TAG}-py${PYTHON_VER}${FLAVOR_SUFFIX}"
             py_suffix="-py${PYTHON_VER}"
           fi
 
@@ -149,44 +294,158 @@ jobs:
           if [[ "$BASE_TAG" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
             
-            # Set floating tag for the highest Python version in the series
-            # Default: use 3.12 for most series, 3.11 for 1.6.x (which doesn't have 3.12)
-            if [[ "$PYTHON_VER" == "3.12" ]]; then
-              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+            # Floating X.Y-pyZ tag: 3.12 for most series, 3.13 for 3.2+, 3.11 for 1.6.x
+            if [[ "$PYTHON_VER" == "3.12" || "$PYTHON_VER" == "3.13" ]]; then
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}${FLAVOR_SUFFIX}")
             elif [[ "$PYTHON_VER" == "3.11" && "$minor" == "1.6" ]]; then
               # 1.6.x series only has 3.10 and 3.11, so use 3.11 for floating tag
-              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}")
+              TAGS+=("bsmeding/nautobot:${minor}${py_suffix}${FLAVOR_SUFFIX}")
             fi
             # If you also want "2.4-latest" style, uncomment next line:
-            # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}")
+            # TAGS+=("bsmeding/nautobot:${minor}-latest${py_suffix}${FLAVOR_SUFFIX}")
           fi
 
           {
             echo "BASE_TAG=$BASE_TAG"
             echo "PYTHON_VER=$PYTHON_VER"
+            echo "PRIMARY_TAG=$base_tag"
+            echo "FLAVOR_SUFFIX=$FLAVOR_SUFFIX"
+            echo "EXTRA_REQUIREMENTS=${{ matrix.extra_requirements }}"
             echo "TAGS<<EOF"
             printf "%s\n" "${TAGS[@]}"
             echo "EOF"
           } >> "$GITHUB_ENV"
 
+      - name: Decide whether to build
+        id: should_build
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FORCE_REBUILD: ${{ needs.prepare.outputs.force_rebuild }}
+          RECIPE_CHANGED: ${{ needs.prepare.outputs.recipe_changed }}
+          MCP_CHANGED: ${{ needs.prepare.outputs.mcp_changed }}
+          TAG_SUFFIX: ${{ matrix.tag_suffix }}
+        run: |
+          set -euo pipefail
+
+          floating=false
+          if [[ "${{ env.BASE_TAG }}" == "stable" || "${{ env.BASE_TAG }}" == "latest" ]]; then
+            floating=true
+          fi
+
+          is_mcp=false
+          if [[ "${TAG_SUFFIX}" == "mcp" ]]; then
+            is_mcp=true
+          fi
+
+          # Daily schedule: only refresh floating tags (pinned X.Y.Z are immutable upstream)
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            if [[ "$floating" == "true" ]]; then
+              echo "reason=schedule-floating"
+              echo "build=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "reason=schedule-skip-pinned"
+              echo "build=false" >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
+          fi
+
+          # Manual force rebuild
+          if [[ "$FORCE_REBUILD" == "true" ]]; then
+            echo "reason=force-rebuild"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Floating tags always rebuild on push/dispatch (upstream moves)
+          if [[ "$floating" == "true" ]]; then
+            echo "reason=floating-tag"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Recipe changed → rebuild all pinned versions so packages/Dockerfile updates land everywhere
+          if [[ "$RECIPE_CHANGED" == "true" ]]; then
+            echo "reason=recipe-changed"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # MCP flavor file only → rebuild *-mcp tags, leave regular images alone
+          if [[ "$is_mcp" == "true" && "$MCP_CHANGED" == "true" ]]; then
+            echo "reason=mcp-requirements-changed"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Typical case: you only added a new upstream version → build only missing tags
+          if docker manifest inspect "${{ env.PRIMARY_TAG }}" >/dev/null 2>&1; then
+            echo "reason=tag-exists-skip (${{ env.PRIMARY_TAG }})"
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "reason=tag-missing-build (${{ env.PRIMARY_TAG }})"
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Debug Info
         run: |
           echo "Upstream base tag (BASE_TAG): ${{ env.BASE_TAG }}"
           echo "Python version (PYTHON_VER):  ${{ env.PYTHON_VER }}"
+          echo "Flavor suffix: ${{ env.FLAVOR_SUFFIX }}"
+          echo "Extra requirements: ${{ env.EXTRA_REQUIREMENTS }}"
+          echo "Primary tag: ${{ env.PRIMARY_TAG }}"
+          echo "Will build: ${{ steps.should_build.outputs.build }}"
           echo "Will push tags:"
           echo "${{ env.TAGS }}"
 
+      - name: Checkout
+        if: steps.should_build.outputs.build == 'true'
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - name: Set up QEMU (enable cross-arch emulation)
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/setup-qemu-action@v4
+
+      - name: Login to Docker Hub
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Update Docker Hub description once per workflow (avoid doing it for every matrix job)
+      - name: Docker Hub Description
+        if: >
+          steps.should_build.outputs.build == 'true' &&
+          matrix.version == 'latest' &&
+          matrix.python_version == 'default' &&
+          !matrix.tag_suffix
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: bsmeding/nautobot
+
       - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
           push: true
-          pull: true          # always fetch newest upstream base (stable/latest move)
-          no-cache: true      # avoid stale layers when upstream moves
+          pull: true
+          # Cold cache only for moving tags; pinned X.Y.Z reuse BuildKit/GHA cache
+          no-cache: ${{ matrix.version == 'stable' || matrix.version == 'latest' }}
+          cache-from: type=gha,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}${{ env.FLAVOR_SUFFIX }}
+          cache-to: type=gha,mode=max,scope=nautobot-${{ env.BASE_TAG }}-py${{ env.PYTHON_VER }}${{ env.FLAVOR_SUFFIX }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             BASE_TAG=${{ env.BASE_TAG }}
             PYTHON_VER=${{ env.PYTHON_VER }}
             NAUTOBOT_VER=${{ env.BASE_TAG }}
+            EXTRA_REQUIREMENTS=${{ env.EXTRA_REQUIREMENTS }}
           tags: ${{ env.TAGS }}

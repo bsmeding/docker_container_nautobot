@@ -1,0 +1,6 @@
+# Including my own build MCP flavor — published only on *-mcp tags
+# (stable-mcp, latest-mcp, and the newest 3.x patch as x.y.z-py3.12-mcp).
+#
+# Does not affect the regular 1.x / 2.x / 3.x / stable / latest images.
+# Enable the app in Nautobot config at runtime (PLUGINS / INSTALLED_APPS).
+nautobot-mcp

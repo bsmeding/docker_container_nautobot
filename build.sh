@@ -27,10 +27,17 @@ Arguments:
 
 Options:
   -p, --python VER     Python version (default: ${DEFAULT_PYTHON_VER})
-                       Supported: 3.10, 3.11, 3.12
+                       Supported: 3.10, 3.11, 3.12, 3.13
   -t, --tag TAG        Custom tag for the image (default: auto-generated)
   -r, --registry REG   Docker registry/username (default: ${DEFAULT_REGISTRY})
   -n, --name NAME      Image name (default: ${DEFAULT_IMAGE_NAME})
+  -d, --dev            Build a local-only "-dev" image: layer requirements-dev.txt
+                       on top of a base image (uses Dockerfile.dev, fast iteration).
+  -m, --mcp            Build a published-style "-mcp" image: same as a normal build
+                       plus requirements-mcp.txt (nautobot-mcp).
+  -b, --base-image IMG Base image for --dev builds
+                       (default: <registry>/<name>:<VERSION>-py<python>).
+                       Use this to layer onto e.g. an upstream/published tag.
   -l, --list           List available versions
   -h, --help           Show this help message
 
@@ -46,6 +53,17 @@ Examples:
 
   # Build latest stable
   $0 stable
+
+  # Build a -dev image on top of a locally built 3.1.0-py3.12 image
+  # (produces <registry>/<name>:3.1.0-py3.12-dev)
+  $0 --dev 3.1.0
+
+  # Build a -dev image on top of a published tag without a local build first
+  $0 --dev -b bsmeding/nautobot:stable -t bsmeding/nautobot:stable-dev stable
+
+  # Build MCP flavor (3.x bundle + nautobot-mcp)
+  $0 --mcp 3.2.5
+  $0 --mcp stable
 
 EOF
 }
@@ -67,8 +85,11 @@ Nautobot 3.x:
 Special tags:
   stable, latest
 
+MCP flavor (add --mcp):
+  publishes as <tag>-mcp (stable-mcp, latest-mcp, 3.2.5-py3.12-mcp)
+
 Python versions:
-  3.10, 3.11, 3.12
+  3.10, 3.11, 3.12, 3.13
 
 EOF
 }
@@ -78,9 +99,9 @@ get_requirements_file() {
     local version=$1
     if [[ "$version" == 1.* ]]; then
         echo "requirements-1.x.txt"
-    elif [[ "$version" == 2.* ]] || [[ "$version" == "stable" ]] || [[ "$version" == "latest" ]]; then
+    elif [[ "$version" == 2.* ]]; then
         echo "requirements-2.x.txt"
-    elif [[ "$version" == 3.* ]]; then
+    elif [[ "$version" == 3.* ]] || [[ "$version" == "stable" ]] || [[ "$version" == "latest" ]]; then
         echo "requirements-3.x.txt"
     else
         echo "unknown"
@@ -110,6 +131,9 @@ CUSTOM_TAG=""
 REGISTRY="${DEFAULT_REGISTRY}"
 IMAGE_NAME="${DEFAULT_IMAGE_NAME}"
 NAUTOBOT_VER=""
+DEV_MODE=false
+MCP_MODE=false
+BASE_IMAGE=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -127,6 +151,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         -n|--name)
             IMAGE_NAME="$2"
+            shift 2
+            ;;
+        -d|--dev)
+            DEV_MODE=true
+            shift
+            ;;
+        -m|--mcp)
+            MCP_MODE=true
+            shift
+            ;;
+        -b|--base-image)
+            BASE_IMAGE="$2"
             shift 2
             ;;
         -l|--list)
@@ -156,21 +192,91 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if version is provided
+# In --dev mode a version is optional as long as an explicit --base-image is given
+# (the version is otherwise only used to derive the base image and tag).
 if [[ -z "$NAUTOBOT_VER" ]]; then
-    echo -e "${RED}Error: Nautobot version is required${NC}" >&2
-    usage
-    exit 1
+    if [[ "$DEV_MODE" == true && -n "$BASE_IMAGE" ]]; then
+        :
+    else
+        echo -e "${RED}Error: Nautobot version is required${NC}" >&2
+        usage
+        exit 1
+    fi
 fi
 
-# Validate version
-validate_version "$NAUTOBOT_VER"
+# Validate version (skipped in --dev mode: dev images layer onto a base image and
+# do not select a per-major requirements file).
+if [[ "$DEV_MODE" != true && -n "$NAUTOBOT_VER" ]]; then
+    validate_version "$NAUTOBOT_VER"
+fi
+
+# ---------------------------------
+# Dev build: layer requirements-dev.txt on top of a base image
+# ---------------------------------
+if [[ "$DEV_MODE" == true ]]; then
+    # Default base image: the standard locally built/published tag for this version
+    if [[ -z "$BASE_IMAGE" ]]; then
+        BASE_IMAGE="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}-py${PYTHON_VER}"
+    fi
+
+    # Default output tag: base image + "-dev"
+    if [[ -n "$CUSTOM_TAG" ]]; then
+        DEV_TAG="$CUSTOM_TAG"
+    else
+        DEV_TAG="${BASE_IMAGE}-dev"
+    fi
+
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}Building Nautobot DEV Docker Image${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "Base image:   ${YELLOW}${BASE_IMAGE}${NC}"
+    echo -e "Dev reqs:     ${YELLOW}requirements-dev.txt${NC}"
+    echo -e "Image Tag:    ${YELLOW}${DEV_TAG}${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    echo ""
+
+    echo -e "${GREEN}Starting dev build...${NC}"
+    docker build \
+        -f Dockerfile.dev \
+        --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+        -t "${DEV_TAG}" \
+        .
+
+    if [[ $? -eq 0 ]]; then
+        echo ""
+        echo -e "${GREEN}✓ Dev build successful!${NC}"
+        echo -e "Image tagged as: ${YELLOW}${DEV_TAG}${NC}"
+        echo ""
+        echo "To run the image:"
+        echo -e "  ${YELLOW}docker run -d -p 8080:8080 ${DEV_TAG}${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Dev build failed!${NC}"
+        exit 1
+    fi
+    exit 0
+fi
 
 # Determine image tag
-# Always include Python version suffix for clarity
+# Match CI: stable/latest have no -py suffix; patch tags do. --mcp appends -mcp.
 if [[ -n "$CUSTOM_TAG" ]]; then
     IMAGE_TAG="$CUSTOM_TAG"
+elif [[ "$NAUTOBOT_VER" == "stable" || "$NAUTOBOT_VER" == "latest" ]]; then
+    IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}"
 else
     IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}-py${PYTHON_VER}"
+fi
+
+EXTRA_REQUIREMENTS=""
+if [[ "$MCP_MODE" == true ]]; then
+    EXTRA_REQUIREMENTS="requirements-mcp.txt"
+    if [[ -z "$CUSTOM_TAG" ]]; then
+        IMAGE_TAG="${IMAGE_TAG}-mcp"
+    fi
+    if [[ ! -f "$EXTRA_REQUIREMENTS" ]]; then
+        echo -e "${RED}Error: Requirements file not found: $EXTRA_REQUIREMENTS${NC}" >&2
+        exit 1
+    fi
 fi
 
 # Determine BASE_TAG (use NAUTOBOT_VER unless it's stable/latest)
@@ -191,6 +297,9 @@ echo -e "Nautobot Version: ${YELLOW}${NAUTOBOT_VER}${NC}"
 echo -e "Python Version:   ${YELLOW}${PYTHON_VER}${NC}"
 echo -e "Base Tag:         ${YELLOW}${BASE_TAG}${NC}"
 echo -e "Requirements:     ${YELLOW}${REQ_FILE}${NC}"
+if [[ -n "$EXTRA_REQUIREMENTS" ]]; then
+    echo -e "Extra flavor:     ${YELLOW}${EXTRA_REQUIREMENTS}${NC}"
+fi
 echo -e "Image Tag:        ${YELLOW}${IMAGE_TAG}${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
@@ -201,6 +310,7 @@ docker build \
     --build-arg BASE_TAG="${BASE_TAG}" \
     --build-arg NAUTOBOT_VER="${NAUTOBOT_VER}" \
     --build-arg PYTHON_VER="${PYTHON_VER}" \
+    --build-arg EXTRA_REQUIREMENTS="${EXTRA_REQUIREMENTS}" \
     -t "${IMAGE_TAG}" \
     .
 
