@@ -63,7 +63,7 @@ jobs:
 
       - name: Docker Image Update Checker
         id: baseupdatecheck
-        uses: lucacome/docker-image-update-checker@v3.0.1
+        uses: lucacome/docker-image-update-checker@v3.1.2
         with:
           # Compare against the image the Dockerfile actually FROMs
           base-image: networktocode/nautobot:${{ steps.names.outputs.UPSTREAM_TAG }}
