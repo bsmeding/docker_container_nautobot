@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       force_rebuild:
-        description: "Rebuild all matrix images even if the tag already exists"
+        description: "Rebuild all matrix images even if the tag already exists on Docker Hub"
         type: boolean
         default: false
 
@@ -29,7 +29,8 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      # true when Dockerfile / shared requirements / init-config change → rebuild ALL pinned tags
+      # true when Dockerfile / shared requirements / init-config change
+      # (logged only; pinned tags that already exist on Docker Hub are not rebuilt)
       recipe_changed: ${{ steps.detect.outputs.recipe_changed }}
       # true when only the MCP flavor file changes → rebuild *-mcp tags, not the whole matrix
       mcp_changed: ${{ steps.detect.outputs.mcp_changed }}
@@ -39,7 +40,7 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/checkout@v6
 
-      # Reliable detection: any requirements/Dockerfile/init change forces full rebuild
+      # Reliable detection: used for logging; missing tags still build, existing pins skip
       - name: Detect recipe file changes
         id: paths
         if: github.event_name == 'push'
@@ -210,39 +211,51 @@ jobs:
           - { version: "3.1.0", python_version: "3.10" }
           - { version: "3.1.0", python_version: "3.11" }
           - { version: "3.1.0", python_version: "3.12" }
+          - { version: "3.1.0", python_version: "3.13" }
           - { version: "3.1.1", python_version: "3.10" }
           - { version: "3.1.1", python_version: "3.11" }
           - { version: "3.1.1", python_version: "3.12" }
+          - { version: "3.1.1", python_version: "3.13" }
           - { version: "3.1.2", python_version: "3.10" }
           - { version: "3.1.2", python_version: "3.11" }
           - { version: "3.1.2", python_version: "3.12" }
+          - { version: "3.1.2", python_version: "3.13" }
           - { version: "3.1.3", python_version: "3.10" }
           - { version: "3.1.3", python_version: "3.11" }
           - { version: "3.1.3", python_version: "3.12" }
+          - { version: "3.1.3", python_version: "3.13" }
           - { version: "3.1.4", python_version: "3.10" }
           - { version: "3.1.4", python_version: "3.11" }
-          - { version: "3.1.4", python_version: "3.12" }  
+          - { version: "3.1.4", python_version: "3.12" }
+          - { version: "3.1.4", python_version: "3.13" }
           - { version: "3.1.5", python_version: "3.10" }
           - { version: "3.1.5", python_version: "3.11" }
-          - { version: "3.1.5", python_version: "3.12" }  
+          - { version: "3.1.5", python_version: "3.12" }
+          - { version: "3.1.5", python_version: "3.13" }
           - { version: "3.1.6", python_version: "3.10" }
           - { version: "3.1.6", python_version: "3.11" }
-          - { version: "3.1.6", python_version: "3.12" }  
+          - { version: "3.1.6", python_version: "3.12" }
+          - { version: "3.1.6", python_version: "3.13" }
           - { version: "3.1.7", python_version: "3.10" }
           - { version: "3.1.7", python_version: "3.11" }
-          - { version: "3.1.7", python_version: "3.12" }  
+          - { version: "3.1.7", python_version: "3.12" }
+          - { version: "3.1.7", python_version: "3.13" }
           - { version: "3.1.8", python_version: "3.10" }
           - { version: "3.1.8", python_version: "3.11" }
-          - { version: "3.1.8", python_version: "3.12" } 
+          - { version: "3.1.8", python_version: "3.12" }
+          - { version: "3.1.8", python_version: "3.13" }
           - { version: "3.2.0", python_version: "3.10" }
           - { version: "3.2.0", python_version: "3.11" }
-          - { version: "3.2.0", python_version: "3.12" } 
+          - { version: "3.2.0", python_version: "3.12" }
+          - { version: "3.2.0", python_version: "3.13" }
           - { version: "3.2.1", python_version: "3.10" }
           - { version: "3.2.1", python_version: "3.11" }
-          - { version: "3.2.1", python_version: "3.12" } 
+          - { version: "3.2.1", python_version: "3.12" }
+          - { version: "3.2.1", python_version: "3.13" }
           - { version: "3.2.2", python_version: "3.10" }
           - { version: "3.2.2", python_version: "3.11" }
           - { version: "3.2.2", python_version: "3.12" }
+          - { version: "3.2.2", python_version: "3.13" }
           - { version: "3.2.3", python_version: "3.10" }
           - { version: "3.2.3", python_version: "3.11" }
           - { version: "3.2.3", python_version: "3.12" }
@@ -255,11 +268,22 @@ jobs:
           - { version: "3.2.5", python_version: "3.11" }
           - { version: "3.2.5", python_version: "3.12" }
           - { version: "3.2.5", python_version: "3.13" }
-          # ------- Upstream tracking tags (single default Python) -------
+          - { version: "3.2.6", python_version: "3.10" }
+          - { version: "3.2.6", python_version: "3.11" }
+          - { version: "3.2.6", python_version: "3.12" }
+          - { version: "3.2.6", python_version: "3.13" }
+          - { version: "3.2.7", python_version: "3.10" }
+          - { version: "3.2.7", python_version: "3.11" }
+          - { version: "3.2.7", python_version: "3.12" }
+          - { version: "3.2.7", python_version: "3.13" }
+          # ------- Upstream tracking tags -------
+          # unsuffixed stable/latest stay on Python 3.12; extra row publishes -py3.13
           - { version: "stable", python_version: "default" }
+          - { version: "stable", python_version: "3.13" }
           - { version: "latest", python_version: "default" }
+          - { version: "latest", python_version: "3.13" }
           # ------- MCP flavor (3.x bundle + nautobot-mcp). Keep 3.x patch in sync with newest 3.x row. -------
-          - { version: "3.2.5", python_version: "3.12", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
+          - { version: "3.2.7", python_version: "3.12", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
           - { version: "stable", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
           - { version: "latest", python_version: "default", extra_requirements: "requirements-mcp.txt", tag_suffix: "mcp" }
 
@@ -288,13 +312,12 @@ jobs:
           # Start with the primary tag
           TAGS=("$base_tag")
 
-          # If BASE_TAG is a full patch X.Y.Z, determine if we should add floating X.Y tag
-          # Only add floating tag for the highest Python version to avoid overwrites
-          # Rule: Use 3.12 if present, otherwise 3.11, otherwise 3.10
+          # If BASE_TAG is a full patch X.Y.Z, also publish floating X.Y-pyZ
+          # (one floating tag per Python variant, so 3.2-py3.12 and 3.2-py3.13 do not overwrite each other)
           if [[ "$BASE_TAG" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             minor="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
             
-            # Floating X.Y-pyZ tag: 3.12 for most series, 3.13 for 3.2+, 3.11 for 1.6.x
+            # Floating X.Y-pyZ tag for each Python variant that exists in that series
             if [[ "$PYTHON_VER" == "3.12" || "$PYTHON_VER" == "3.13" ]]; then
               TAGS+=("bsmeding/nautobot:${minor}${py_suffix}${FLAVOR_SUFFIX}")
             elif [[ "$PYTHON_VER" == "3.11" && "$minor" == "1.6" ]]; then
@@ -350,7 +373,7 @@ jobs:
             exit 0
           fi
 
-          # Manual force rebuild
+          # Manual force rebuild (the only way to refresh pinned tags that already exist)
           if [[ "$FORCE_REBUILD" == "true" ]]; then
             echo "reason=force-rebuild"
             echo "build=true" >> "$GITHUB_OUTPUT"
@@ -364,26 +387,47 @@ jobs:
             exit 0
           fi
 
-          # Recipe changed → rebuild all pinned versions so packages/Dockerfile updates land everywhere
-          if [[ "$RECIPE_CHANGED" == "true" ]]; then
-            echo "reason=recipe-changed"
-            echo "build=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # MCP flavor file only → rebuild *-mcp tags, leave regular images alone
+          # MCP flavor file changed → refresh *-mcp tags even if they already exist
           if [[ "$is_mcp" == "true" && "$MCP_CHANGED" == "true" ]]; then
             echo "reason=mcp-requirements-changed"
             echo "build=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # Typical case: you only added a new upstream version → build only missing tags
-          if docker manifest inspect "${{ env.PRIMARY_TAG }}" >/dev/null 2>&1; then
-            echo "reason=tag-exists-skip (${{ env.PRIMARY_TAG }})"
+          # Pinned X.Y.Z tags are immutable once published. Skip if the primary tag
+          # is already on Docker Hub (new python/version matrix rows still build).
+          PRIMARY="${{ env.PRIMARY_TAG }}"
+          repo="${PRIMARY%%:*}"
+          tag="${PRIMARY#*:}"
+          hub_url="https://hub.docker.com/v2/repositories/${repo}/tags/${tag}"
+          http_code=""
+          for _ in 1 2 3; do
+            http_code="$(curl -sS -o /dev/null -w "%{http_code}" "$hub_url" || true)"
+            if [[ "$http_code" == "200" || "$http_code" == "404" ]]; then
+              break
+            fi
+            sleep 2
+          done
+
+          exists=false
+          if [[ "$http_code" == "200" ]]; then
+            exists=true
+          elif [[ "$http_code" == "404" ]]; then
+            exists=false
+          elif docker manifest inspect "$PRIMARY" >/dev/null 2>&1; then
+            exists=true
+            http_code="${http_code:-inspect}"
+          fi
+
+          if [[ "$exists" == "true" ]]; then
+            extra=""
+            if [[ "$RECIPE_CHANGED" == "true" ]]; then
+              extra=" (recipe also changed; use workflow_dispatch force_rebuild to refresh this pin)"
+            fi
+            echo "reason=tag-exists-skip (${PRIMARY})${extra}"
             echo "build=false" >> "$GITHUB_OUTPUT"
           else
-            echo "reason=tag-missing-build (${{ env.PRIMARY_TAG }})"
+            echo "reason=tag-missing-build (${PRIMARY}, hub=${http_code:-n/a})"
             echo "build=true" >> "$GITHUB_OUTPUT"
           fi
 

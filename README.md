@@ -10,11 +10,11 @@ Nautobot Docker image extended with networking tools, Ansible, job-oriented Pyth
 
 **Published on Docker Hub:** [bsmeding/nautobot](https://hub.docker.com/r/bsmeding/nautobot) (linux/amd64 and linux/arm64).
 
-**Tags:** patch releases use **`x.y.z-py3.nn`** (Nautobot version plus Python), for example `3.1.0-py3.12`, `2.4.31-py3.12`, `1.6.32-py3.11`. For each minor line (e.g. **3.1**), a floating tag like **`3.1-py3.12`** is published for the newest patch on the highest Python in that series (for **1.6**, the floating tag uses **3.11** as the highest Python in the matrix). Upstream-tracking **`stable`** and **`latest`** follow `networktocode/nautobot` of the same name (currently Nautobot **3.x**, Python 3.12, no `-py…` suffix) and install the **3.x** app bundle. Use an explicit **`2.x.y-py3.nn`** tag when you want the 2.x plugin pins.
+**Tags:** patch releases use **`x.y.z-py3.nn`** (Nautobot version plus Python), for example `3.2.5-py3.12`, `3.2.5-py3.13`, `2.4.42-py3.12`. For each minor line (e.g. **3.2**), a floating tag like **`3.2-py3.12`** is published for the newest patch of that Python (also **`3.2-py3.13`** where upstream has it; **2.4** is 3.10–3.12 only; **1.6** uses **3.11** as its highest). Upstream-tracking **`stable`** and **`latest`** follow `networktocode/nautobot` of the same name (currently Nautobot **3.x**). The unsuffixed tags use Python **3.12**; **`stable-py3.13`** and **`latest-py3.13`** are also published. All of those install the **3.x** app bundle. Use an explicit **`2.x.y-py3.nn`** tag when you want the 2.x plugin pins.
 
 **MCP flavor (`-mcp`):** same 3.x image plus [`nautobot-mcp`](https://pypi.org/project/nautobot-mcp/) from [`requirements-mcp.txt`](requirements-mcp.txt). Published as **`stable-mcp`**, **`latest-mcp`**, and the newest 3.x patch (**`3.2.5-py3.12-mcp`**, plus floating **`3.2-py3.12-mcp`**). Regular tags do **not** include this app. Enable it in Nautobot config (`PLUGINS` / `INSTALLED_APPS`) at runtime.
 
-As of **May 2025**, **Python 3.9** images are discontinued. Use **3.10+** (e.g. `-py3.12`). Nautobot **3.2.3+** also publishes **`-py3.13`**.
+As of **May 2025**, **Python 3.9** images are discontinued. Use **3.10–3.13** (e.g. `-py3.12`). Nautobot **3.1** and **3.2** also publish **`-py3.13`**. **2.4** stays on **3.10–3.12**. Python **3.14** is not built yet (app compatibility).
 
 ## Pull the image
 
