@@ -38,13 +38,13 @@ jobs:
     steps:
       - name: Checkout
         if: github.event_name == 'push'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Reliable detection: used for logging; missing tags still build, existing pins skip
       - name: Detect recipe file changes
         id: paths
         if: github.event_name == 'push'
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             recipe:
@@ -444,7 +444,7 @@ jobs:
 
       - name: Checkout
         if: steps.should_build.outputs.build == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         if: steps.should_build.outputs.build == 'true'
