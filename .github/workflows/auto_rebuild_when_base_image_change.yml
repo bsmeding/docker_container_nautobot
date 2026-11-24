@@ -30,14 +30,14 @@ jobs:
           - { base_tag: "3.2", python_version: "3.11" }
           - { base_tag: "3.2", python_version: "3.12" }
           - { base_tag: "3.2", python_version: "3.13" }
-          # ------- Upstream tracking names -------
-          - { base_tag: "stable", python_version: "3.12", publish_tag: "stable" }
+          # ------- Upstream tracking names (unsuffixed tags are Python 3.14) -------
+          - { base_tag: "stable", python_version: "3.14", publish_tag: "stable" }
           - { base_tag: "stable", python_version: "3.13" }
-          - { base_tag: "latest", python_version: "3.12", publish_tag: "latest" }
+          - { base_tag: "latest", python_version: "3.14", publish_tag: "latest" }
           - { base_tag: "latest", python_version: "3.13" }
           # ------- MCP flavor (same bases + requirements-mcp.txt) -------
-          - { base_tag: "stable", python_version: "3.12", publish_tag: "stable-mcp", extra_requirements: "requirements-mcp.txt" }
-          - { base_tag: "latest", python_version: "3.12", publish_tag: "latest-mcp", extra_requirements: "requirements-mcp.txt" }
+          - { base_tag: "stable", python_version: "3.14", publish_tag: "stable-mcp", extra_requirements: "requirements-mcp.txt" }
+          - { base_tag: "latest", python_version: "3.14", publish_tag: "latest-mcp", extra_requirements: "requirements-mcp.txt" }
           - { base_tag: "3.2", python_version: "3.12", publish_tag: "3.2-py3.12-mcp", extra_requirements: "requirements-mcp.txt" }
 
     steps:

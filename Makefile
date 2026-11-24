@@ -5,6 +5,16 @@ REGISTRY ?= bsmeding
 IMAGE_NAME ?= nautobot
 PYTHON_VER ?= 3.12
 
+# Unsuffixed stable/latest follow upstream's default Python unless PYTHON_VER
+# was passed on the command line.
+ifeq ($(origin PYTHON_VER),command line)
+EFFECTIVE_PYTHON_VER := $(PYTHON_VER)
+else ifneq ($(filter stable latest,$(VERSION)),)
+EFFECTIVE_PYTHON_VER := 3.14
+else
+EFFECTIVE_PYTHON_VER := $(PYTHON_VER)
+endif
+
 help: ## Show this help message
 	@echo "Nautobot Docker Image Build System"
 	@echo ""
@@ -31,28 +41,28 @@ build: ## Build image for specified VERSION (required: VERSION=x.y.z)
 		echo "Error: VERSION is required. Example: make build VERSION=3.0.2"; \
 		exit 1; \
 	fi
-	@./build.sh -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
+	@./build.sh -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
 
 build-1x: ## Build Nautobot 1.x image (required: VERSION=1.x.x)
 	@if [ -z "$(VERSION)" ]; then \
 		echo "Error: VERSION is required. Example: make build-1x VERSION=1.6.32"; \
 		exit 1; \
 	fi
-	@./build.sh -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
+	@./build.sh -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
 
 build-2x: ## Build Nautobot 2.x image (required: VERSION=2.x.x)
 	@if [ -z "$(VERSION)" ]; then \
 		echo "Error: VERSION is required. Example: make build-2x VERSION=2.4.19"; \
 		exit 1; \
 	fi
-	@./build.sh -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
+	@./build.sh -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
 
 build-3x: ## Build Nautobot 3.x image (required: VERSION=3.x.x)
 	@if [ -z "$(VERSION)" ]; then \
 		echo "Error: VERSION is required. Example: make build-3x VERSION=3.0.2"; \
 		exit 1; \
 	fi
-	@./build.sh -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
+	@./build.sh -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) $(VERSION)
 
 build-dev: ## Build local -dev image layering requirements-dev.txt (VERSION=x.y.z or BASE_IMAGE=...)
 	@if [ -z "$(VERSION)" ] && [ -z "$(BASE_IMAGE)" ]; then \
@@ -61,7 +71,7 @@ build-dev: ## Build local -dev image layering requirements-dev.txt (VERSION=x.y.
 		echo "  make build-dev BASE_IMAGE=bsmeding/nautobot:stable"; \
 		exit 1; \
 	fi
-	@./build.sh --dev -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
+	@./build.sh --dev -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
 		$(if $(BASE_IMAGE),-b $(BASE_IMAGE),) \
 		$(if $(TAG),-t $(TAG),) \
 		$(VERSION)
@@ -73,7 +83,7 @@ build-mcp: ## Build -mcp image (3.x bundle + nautobot-mcp). VERSION=x.y.z|stable
 		echo "  make build-mcp VERSION=stable"; \
 		exit 1; \
 	fi
-	@./build.sh --mcp -p $(PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
+	@./build.sh --mcp -p $(EFFECTIVE_PYTHON_VER) -r $(REGISTRY) -n $(IMAGE_NAME) \
 		$(if $(TAG),-t $(TAG),) \
 		$(VERSION)
 

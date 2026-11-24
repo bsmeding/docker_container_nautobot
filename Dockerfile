@@ -1,6 +1,6 @@
 # Accept upstream tag + python version
 ARG BASE_TAG=stable
-ARG PYTHON_VER=3.12
+ARG PYTHON_VER=3.14
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 

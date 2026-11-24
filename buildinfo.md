@@ -71,7 +71,7 @@ The Dockerfile automatically selects the correct requirements file based on the 
 
 ```bash
 # MCP flavor (3.x bundle + nautobot-mcp)
-./build.sh --mcp 3.2.5
+./build.sh --mcp 3.2.10
 ./build.sh --mcp stable
 make build-mcp VERSION=latest
 ```

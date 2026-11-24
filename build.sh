@@ -26,8 +26,9 @@ Arguments:
   VERSION              Nautobot version to build (e.g., 1.6.32, 2.4.19, 3.0.2, stable, latest)
 
 Options:
-  -p, --python VER     Python version (default: ${DEFAULT_PYTHON_VER})
-                       Supported: 3.10, 3.11, 3.12, 3.13
+  -p, --python VER     Python version (default: ${DEFAULT_PYTHON_VER};
+                       stable/latest default to 3.14)
+                       Supported: 3.10, 3.11, 3.12, 3.13, 3.14
   -t, --tag TAG        Custom tag for the image (default: auto-generated)
   -r, --registry REG   Docker registry/username (default: ${DEFAULT_REGISTRY})
   -n, --name NAME      Image name (default: ${DEFAULT_IMAGE_NAME})
@@ -62,7 +63,7 @@ Examples:
   $0 --dev -b bsmeding/nautobot:stable -t bsmeding/nautobot:stable-dev stable
 
   # Build MCP flavor (3.x bundle + nautobot-mcp)
-  $0 --mcp 3.2.5
+  $0 --mcp 3.2.10
   $0 --mcp stable
 
 EOF
@@ -86,7 +87,7 @@ Special tags:
   stable, latest
 
 MCP flavor (add --mcp):
-  publishes as <tag>-mcp (stable-mcp, latest-mcp, 3.2.5-py3.12-mcp)
+  publishes as <tag>-mcp (stable-mcp, latest-mcp, 3.2.10-py3.12-mcp)
 
 Python versions:
   3.10, 3.11, 3.12, 3.13
@@ -127,6 +128,7 @@ validate_version() {
 
 # Parse arguments
 PYTHON_VER="${DEFAULT_PYTHON_VER}"
+PYTHON_EXPLICIT=false
 CUSTOM_TAG=""
 REGISTRY="${DEFAULT_REGISTRY}"
 IMAGE_NAME="${DEFAULT_IMAGE_NAME}"
@@ -139,6 +141,7 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -p|--python)
             PYTHON_VER="$2"
+            PYTHON_EXPLICIT=true
             shift 2
             ;;
         -t|--tag)
@@ -257,11 +260,17 @@ if [[ "$DEV_MODE" == true ]]; then
     exit 0
 fi
 
+# Unsuffixed stable/latest follow upstream's default Python.
+if [[ "$PYTHON_EXPLICIT" == false && ( "$NAUTOBOT_VER" == "stable" || "$NAUTOBOT_VER" == "latest" ) ]]; then
+    PYTHON_VER="3.14"
+fi
+
 # Determine image tag
-# Match CI: stable/latest have no -py suffix; patch tags do. --mcp appends -mcp.
+# Match CI: stable/latest on the default Python have no -py suffix; other tags do.
+# --mcp appends -mcp.
 if [[ -n "$CUSTOM_TAG" ]]; then
     IMAGE_TAG="$CUSTOM_TAG"
-elif [[ "$NAUTOBOT_VER" == "stable" || "$NAUTOBOT_VER" == "latest" ]]; then
+elif [[ ( "$NAUTOBOT_VER" == "stable" || "$NAUTOBOT_VER" == "latest" ) && "$PYTHON_VER" == "3.14" ]]; then
     IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}"
 else
     IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${NAUTOBOT_VER}-py${PYTHON_VER}"
