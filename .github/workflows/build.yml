@@ -290,7 +290,8 @@ jobs:
           - { version: "3.2.7", python_version: "3.11" }
           - { version: "3.2.7", python_version: "3.12" }
           - { version: "3.2.7", python_version: "3.13" }
-          - { version: "3.2.8", python_version: "3.10" }
+          # 3.2.8-py3.10 exists upstream, but nautobot-dns-models==3.0.0 needs Python >=3.11
+          # - { version: "3.2.8", python_version: "3.10" }
           - { version: "3.2.8", python_version: "3.11" }
           - { version: "3.2.8", python_version: "3.12" }
           - { version: "3.2.8", python_version: "3.13" }
